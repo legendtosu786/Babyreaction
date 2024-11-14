@@ -9,7 +9,7 @@ TOKEN = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0'
 # List of emojis for random selection
 emoji_list = ['👍', '❤️', '😂', '😲', '🎉', '🔥', '👏', '😎']
 
-# Function to handle messages and react with a random emoji
+# Function to handle messages and react with a random emoji (sending it as a message)
 async def react_to_post(update: Update, context: CallbackContext):
     message = update.message
     if message.text:  # Only react to text messages
