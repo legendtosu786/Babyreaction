@@ -1,5 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
+const express = require('express');
+const app = express();
 
 // Your bot's token (replace it with your actual token)
 const token = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0';
@@ -70,3 +72,13 @@ bot.on('message', (msg) => {
 });
 
 console.log('Bot is running...');
+
+// Set up a basic Express server to listen on port 8000
+app.get('/', (req, res) => {
+  res.send('Bot is running on port 8000');
+});
+
+// Start the server on port 8000
+app.listen(8000, () => {
+  console.log('Server is running on port 8000');
+});
