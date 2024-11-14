@@ -17,23 +17,20 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(chatId, 'Hello! I am your Emoji Bot. Send me a message and I will reply with a random emoji!');
 });
 
-// Listen for any new messages
+// Listen for any new messages (including private messages, groups, and channels)
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageId = msg.message_id;
 
-  // Check if the message is from a group or a channel
-  if (msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
-    // Select a random emoji from the list
-    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+  // Select a random emoji from the list
+  const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-    // Send the random emoji as a reply
-    bot.sendMessage(chatId, randomEmoji, { reply_to_message_id: messageId })
-      .then(() => {
-        console.log(`Replied with ${randomEmoji} to message: ${msg.text}`);
-      })
-      .catch((error) => {
-        console.error(`Error sending emoji: ${error}`);
-      });
-  }
+  // Send the random emoji as a reply (for any message type)
+  bot.sendMessage(chatId, randomEmoji, { reply_to_message_id: messageId })
+    .then(() => {
+      console.log(`Replied with ${randomEmoji} to message: ${msg.text}`);
+    })
+    .catch((error) => {
+      console.error(`Error sending emoji: ${error}`);
+    });
 });
