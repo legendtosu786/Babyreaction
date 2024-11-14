@@ -1,3 +1,4 @@
+import asyncio
 from telegram import Update
 from telegram.ext import CommandHandler, MessageHandler, Application, CallbackContext
 from telegram.ext import filters
@@ -20,6 +21,7 @@ async def start(update: Update, context: CallbackContext):
 
 # Main function to setup the bot
 async def main():
+    # Create the application
     application = Application.builder().token(TOKEN).build()
 
     # Command to start the bot
@@ -28,10 +30,14 @@ async def main():
     # Message handler to react on every message
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, react_to_message))
 
-    # Start the bot
+    # Run the bot (this will handle its own event loop)
     await application.run_polling()
 
+# Alternative run function using the existing event loop
+def run():
+    loop = asyncio.get_event_loop()
+    loop.create_task(main())
+    loop.run_forever()
+
 if __name__ == '__main__':
-    # Run the bot's main async function using asyncio.run
-    import asyncio
-    asyncio.run(main())  # This will run the main coroutine properly
+    run()
