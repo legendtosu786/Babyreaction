@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import CommandHandler, MessageHandler, Application, CallbackContext
-from telegram.ext.filters import Filters
+from telegram.ext import filters  # Correct way to import Filters
 
 # Bot's Token from BotFather
 TOKEN = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0'
@@ -26,7 +26,7 @@ async def main():
     application.add_handler(CommandHandler("start", start))
 
     # Message handler to react on every message
-    application.add_handler(MessageHandler(Filters.text & ~Filters.command, react_to_message))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, react_to_message))
 
     # Start the bot
     await application.run_polling()
