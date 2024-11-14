@@ -17,6 +17,11 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(chatId, 'Hello! I am your Emoji Bot. Send me a message and I will react with a random emoji!');
 });
 
+// Handle polling errors
+bot.on('polling_error', (error) => {
+  console.error('Polling error:', error); // Log the polling error
+});
+
 // Listen for new messages and react with a random emoji
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
@@ -28,7 +33,7 @@ bot.on('message', (msg) => {
     const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
     // React to the message with a random emoji (using the "addReaction" method)
-    bot.reactToMessage(chatId, messageId, randomEmoji)
+    bot.sendMessage(chatId, randomEmoji, { reply_to_message_id: messageId }) // Sending emoji as reply is a workaround
       .then(() => {
         console.log(`Reacted with ${randomEmoji} to message: ${msg.text}`);
       })
@@ -37,3 +42,5 @@ bot.on('message', (msg) => {
       });
   }
 });
+
+console.log('Bot is running...');
