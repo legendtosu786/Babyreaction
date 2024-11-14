@@ -1,16 +1,11 @@
-{
-  "telegramBotTokens": [
-    "7200164571:AAG_TConjf14qjewNbwGRhrpVA7xJ_cAylg",  // Replace with your first bot token
-    "7015056498:AAGcZa04jeVe9EvsjlfW_6P2k95D57sL8cY",  // Replace with your second bot token
-    "6443871444:AAEqas0L2bJQtybywpDuq3zcycWpiZV83vo",  // Replace with your third bot token
-    "7463542222:AAF14OHfN8mh5rstHUI5L6IZRITjHahBJYQ",  // Replace with your fourth bot token
-    "TOKEN_5",  // Replace with your fifth bot token
-    "TOKEN_6",  // Replace with your sixth bot token
-    "TOKEN_7",  // Replace with your seventh bot token
-    "TOKEN_8",  // Replace with your eighth bot token
-    "TOKEN_9",  // Replace with your ninth bot token
-    "TOKEN_10"  // Replace with your tenth bot token
-  ],
-  "serverPort": 8000  // The port where the server will run
-}
+require('dotenv').config();
 
+module.exports = {
+  telegramBotTokens: [
+    process.env.TELEGRAM_BOT_TOKEN_1,
+    process.env.TELEGRAM_BOT_TOKEN_2,
+    process.env.TELEGRAM_BOT_TOKEN_3,
+    // Add more tokens as needed
+  ],
+  serverPort: 8000
+};
