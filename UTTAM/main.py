@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import CommandHandler, MessageHandler, Application, CallbackContext
-from telegram.ext import filters  # Correct way to import Filters
+from telegram.ext import filters
 
 # Bot's Token from BotFather
 TOKEN = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0'
@@ -33,4 +33,9 @@ async def main():
 
 if __name__ == '__main__':
     import asyncio
-    asyncio.run(main())
+
+    # Get the current event loop
+    loop = asyncio.get_event_loop()
+
+    # Run the bot's main async function in the event loop
+    loop.run_until_complete(main())
