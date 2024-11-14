@@ -1,43 +1,31 @@
-import logging
-from telegram import Update
-from telegram.ext import CommandHandler, MessageHandler, Application, CallbackContext
-from telegram.ext import filters
-import asyncio
+const TelegramBot = require('node-telegram-bot-api');
 
-# Bot's Token from BotFather
-TOKEN = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0'
+// Your bot's token (replace it with your actual token)
+const token = 'YOUR_BOT_TOKEN';
 
-# Enable logging to see what's happening with the bot
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
+// Create a new bot instance
+const bot = new TelegramBot(token, { polling: true });
 
-# Emoji react karne ke liye function
-async def react_to_message(update: Update, context: CallbackContext):
-    message = update.message
-    if message.text:
-        emoji = "👍"  # Example emoji to react with
-        await message.react(emoji)
+// List of emojis to react with
+const emojis = ['👍', '😄', '❤️', '😂', '🎉', '🙌', '😎', '🔥', '💯', '👀'];
 
-# Start function jo bot ko chalu karega
-async def start(update: Update, context: CallbackContext):
-    await update.message.reply_text("Bot is now active! It will react to messages.")
+// Listen for any new messages
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  const messageId = msg.message_id;
 
-# Main function to setup the bot
-async def main():
-    # Create the application
-    application = Application.builder().token(TOKEN).build()
+  // Check if the message is from a group or a channel
+  if (msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
+    // Select a random emoji from the list
+    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-    # Initialize the application (await it to avoid warnings)
-    await application.initialize()
-
-    # Add handlers
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, react_to_message))
-
-    # Run the bot
-    await application.run_polling()
-
-# Use asyncio.run to run the main function
-if __name__ == '__main__':
-    asyncio.run(main())
+    // Send the random emoji as a reply
+    bot.sendMessage(chatId, randomEmoji, { reply_to_message_id: messageId })
+      .then(() => {
+        console.log(`Replied with ${randomEmoji} to message: ${msg.text}`);
+      })
+      .catch((error) => {
+        console.error(`Error sending emoji: ${error}`);
+      });
+  }
+});
