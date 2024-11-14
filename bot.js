@@ -14,8 +14,8 @@ const myEmoji = ["👍", "❤", "🔥", "🥰", "👏", "😁", "🤔", "🤯", 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const text = `
-  *Hey, I am a reaction bot!*\n\n
-  _Add me to your group/channel to get emoji reactions!_\n\n
+  *Hey, I am a reaction bot!*\n
+  ~Add me to your group/channel to get emoji reactions!~\n
   To join, click the button below 👇
   `;
 
