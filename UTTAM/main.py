@@ -34,8 +34,5 @@ async def main():
 if __name__ == '__main__':
     import asyncio
 
-    # Get the current event loop
-    loop = asyncio.get_event_loop()
-
-    # Run the bot's main async function in the event loop
-    loop.run_until_complete(main())
+    # Run the bot's main async function using asyncio.run to manage the event loop
+    asyncio.run(main())
