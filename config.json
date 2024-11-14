@@ -1,4 +1,16 @@
 {
-  "telegramBotToken":
-  "serverPort": 8000
+  "telegramBotTokens": [
+    "TOKEN_1",  // Replace with your first bot token
+    "TOKEN_2",  // Replace with your second bot token
+    "TOKEN_3",  // Replace with your third bot token
+    "TOKEN_4",  // Replace with your fourth bot token
+    "TOKEN_5",  // Replace with your fifth bot token
+    "TOKEN_6",  // Replace with your sixth bot token
+    "TOKEN_7",  // Replace with your seventh bot token
+    "TOKEN_8",  // Replace with your eighth bot token
+    "TOKEN_9",  // Replace with your ninth bot token
+    "TOKEN_10"  // Replace with your tenth bot token
+  ],
+  "serverPort": 8000  // The port where the server will run
 }
+
