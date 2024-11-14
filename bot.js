@@ -13,7 +13,24 @@ const myEmoji = ["👍", "❤", "🔥", "🥰", "👏", "😁", "🤔", "🤯", 
 // Handle /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, 'Hello! I am your Emoji Bot. Send me a message and I will react with a random emoji!');
+  const text = `
+  *Hey, I am a reaction bot!*\n\n
+  _Add me to your group/channel to get emoji reactions!_\n\n
+  To join, click the button below 👇
+  `;
+
+  // Send a message with Markdown styling and an inline button with the link
+  bot.sendMessage(chatId, text, {
+    parse_mode: 'Markdown', // Enable Markdown formatting
+    reply_markup: {
+      inline_keyboard: [
+        [{
+          text: 'Join 👋',
+          url: 'https://t.me/BABY09_WORLD' // Replace with your channel link
+        }]
+      ]
+    }
+  });
 });
 
 // Handle polling errors
