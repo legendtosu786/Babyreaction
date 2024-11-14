@@ -1,13 +1,13 @@
-// Load environment variables from .env file
-require('dotenv').config();
+// Load the config file
+const config = require('./config');
 
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const express = require('express');
 const app = express();
 
-// Use the bot token from the .env file
-const token = process.env.TELEGRAM_BOT_TOKEN;
+// Use the bot token from the config file
+const token = config.telegramBotToken;
 
 // Create a new bot instance
 const bot = new TelegramBot(token, { polling: true });
@@ -94,7 +94,7 @@ app.get('/', (req, res) => {
   res.send('Bot is running on port 8000');
 });
 
-// Start the server on port 8000
-app.listen(8000, () => {
-  console.log('Server is running on port 8000');
+// Start the server on the port defined in config
+app.listen(config.serverPort, () => {
+  console.log(`Server is running on port ${config.serverPort}`);
 });
