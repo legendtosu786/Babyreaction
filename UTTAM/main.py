@@ -9,7 +9,7 @@ TOKEN = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0'
 # List of emojis for random selection
 emoji_list = ['👍', '❤️', '😂', '😲', '🎉', '🔥', '👏', '😎']
 
-# Function to handle messages and react with a random emoji (sending it as a message)
+# Function to handle messages and simulate reactions by replying with an emoji
 async def react_to_post(update: Update, context: CallbackContext):
     message = update.message
     if message.text:  # Only react to text messages
@@ -18,8 +18,8 @@ async def react_to_post(update: Update, context: CallbackContext):
         # Choose a random emoji from the list
         random_emoji = random.choice(emoji_list)
 
-        # Send the emoji as a new message (simulating a reaction)
-        await bot.send_message(chat_id=message.chat_id, text=random_emoji)
+        # Send the emoji as a reply to the original message (simulating a reaction)
+        await message.reply_text(random_emoji)
 
 # Start command to greet the user when bot is added
 async def start(update: Update, context: CallbackContext):
