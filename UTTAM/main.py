@@ -18,8 +18,8 @@ async def react_to_post(update: Update, context: CallbackContext):
         # Choose a random emoji from the list
         random_emoji = random.choice(emoji_list)
 
-        # Add the reaction to the message
-        await bot.add_reaction(chat_id=message.chat_id, message_id=message.message_id, emoji=random_emoji)
+        # Send the emoji as a new message (simulating a reaction)
+        await bot.send_message(chat_id=message.chat_id, text=random_emoji)
 
 # Start command to greet the user when bot is added
 async def start(update: Update, context: CallbackContext):
