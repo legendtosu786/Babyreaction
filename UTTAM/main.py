@@ -1,7 +1,7 @@
 import random
 from telegram import Update
 from telegram.ext import Updater, MessageHandler, CommandHandler, CallbackContext
-from telegram.ext.filters import Filters  # Corrected import
+from telegram.ext import filters  # Corrected import for latest version
 
 # Bot Token
 TOKEN = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0'
@@ -36,7 +36,7 @@ def main():
     dispatcher.add_handler(CommandHandler('start', start))
 
     # Add a message handler to react to messages in the group/channel
-    dispatcher.add_handler(MessageHandler(Filters.text & (~Filters.command), react_to_post))
+    dispatcher.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), react_to_post))
 
     # Start polling for updates
     updater.start_polling()
