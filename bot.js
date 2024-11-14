@@ -14,23 +14,26 @@ bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
   // Send a welcome message when the user starts the bot
-  bot.sendMessage(chatId, 'Hello! I am your Emoji Bot. Send me a message and I will reply with a random emoji!');
+  bot.sendMessage(chatId, 'Hello! I am your Emoji Bot. Send me a message and I will react with a random emoji!');
 });
 
-// Listen for any new messages (including private messages, groups, and channels)
+// Listen for new messages and react with a random emoji
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageId = msg.message_id;
 
-  // Select a random emoji from the list
-  const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+  // Ensure we only react to group or private messages (ignoring any non-message events)
+  if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
+    // Select a random emoji from the list
+    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-  // Send the random emoji as a reply (for any message type)
-  bot.sendMessage(chatId, randomEmoji, { reply_to_message_id: messageId })
-    .then(() => {
-      console.log(`Replied with ${randomEmoji} to message: ${msg.text}`);
-    })
-    .catch((error) => {
-      console.error(`Error sending emoji: ${error}`);
-    });
+    // React to the message with a random emoji (using the "addReaction" method)
+    bot.reactToMessage(chatId, messageId, randomEmoji)
+      .then(() => {
+        console.log(`Reacted with ${randomEmoji} to message: ${msg.text}`);
+      })
+      .catch((error) => {
+        console.error(`Error reacting with emoji: ${error}`);
+      });
+  }
 });
