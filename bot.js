@@ -19,7 +19,6 @@ const bots = tokens.map((token, index) => new TelegramBot(token, { polling: true
 
 // For each bot, set up the necessary handlers
 bots.forEach((bot, index) => {
-
   // /start command handler
   bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
