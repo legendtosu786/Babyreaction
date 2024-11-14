@@ -1,4 +1,3 @@
-const config = require('./config');
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const express = require('express');
@@ -11,8 +10,13 @@ const myEmoji = [
   "🤪", "🗿", "🆒", "💘", "😘", "😎"
 ];
 
-// Get the list of bot tokens from config
-const tokens = config.telegramBotTokens;
+// Directly adding bot tokens here
+const tokens = [
+  "7015056498:AAGcZa04jeVe9EvsjlfW_6P2k95D57sL8cY",  // Bot token 1
+  "6443871444:AAEqas0L2bJQtybywpDuq3zcycWpiZV83vo",  // Bot token 2
+  "7463542222:AAF14OHfN8mh5rstHUI5L6IZRITjHahBJYQ",  // Bot token 3
+  // Add more tokens as needed
+];
 
 // Create an array of bot instances
 const bots = tokens.map((token, index) => new TelegramBot(token, { polling: true }));
@@ -93,7 +97,7 @@ app.get('/', (req, res) => {
   res.send('All bots are running on port 8000');
 });
 
-// Start the Express server on the port from config
-app.listen(config.serverPort, () => {
-  console.log(`Server is running on port ${config.serverPort}`);
+// Start the Express server on the port
+app.listen(8000, () => {
+  console.log(`Server is running on port 8000`);
 });
