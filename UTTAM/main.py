@@ -36,8 +36,8 @@ async def main():
         # Create the application
         application = Application.builder().token(TOKEN).build()
 
-        # Initialize the application (await it to avoid warnings)
-        await application.initialize()
+        # Explicitly await application initialization
+        await application.initialize()  # This is critical to avoid the warning
 
         # Command to start the bot
         application.add_handler(CommandHandler("start", start))
