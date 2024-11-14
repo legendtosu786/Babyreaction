@@ -1,7 +1,7 @@
 import random
 from telegram import Update
-from telegram.ext import Updater, MessageHandler, CommandHandler, CallbackContext
-from telegram.ext import filters  # Corrected import for latest version
+from telegram.ext import Application, MessageHandler, CommandHandler, CallbackContext
+from telegram.ext import filters
 
 # Bot Token
 TOKEN = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0'
@@ -10,7 +10,7 @@ TOKEN = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0'
 emoji_list = ['👍', '❤️', '😂', '😲', '🎉', '🔥', '👏', '😎']
 
 # Function to handle messages and react with a random emoji
-def react_to_post(update: Update, context: CallbackContext):
+async def react_to_post(update: Update, context: CallbackContext):
     message = update.message
     if message.text:  # Only react to text messages
         bot = context.bot
@@ -19,30 +19,24 @@ def react_to_post(update: Update, context: CallbackContext):
         random_emoji = random.choice(emoji_list)
 
         # Add the reaction to the message
-        bot.react_to_message(chat_id=message.chat_id, message_id=message.message_id, emoji=random_emoji)
+        await bot.react_to_message(chat_id=message.chat_id, message_id=message.message_id, emoji=random_emoji)
 
 # Start command to greet the user when bot is added
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text('Hello! I will react to messages with random emojis.')
+async def start(update: Update, context: CallbackContext):
+    await update.message.reply_text('Hello! I will react to messages with random emojis.')
 
 def main():
-    # Create the Updater and pass it your bot's token
-    updater = Updater(TOKEN, use_context=True)
+    # Create the Application and pass it your bot's token
+    application = Application.builder().token(TOKEN).build()
 
-    # Get the dispatcher to register handlers
-    dispatcher = updater.dispatcher
-    
     # Add a command handler to handle the /start command
-    dispatcher.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('start', start))
 
     # Add a message handler to react to messages in the group/channel
-    dispatcher.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), react_to_post))
+    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), react_to_post))
 
     # Start polling for updates
-    updater.start_polling()
-
-    # Block until you send a signal to stop the bot
-    updater.idle()
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
