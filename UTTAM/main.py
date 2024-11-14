@@ -1,6 +1,6 @@
 from telegram import Update
-from telegram import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
-
+from telegram import Updater, CommandHandler, MessageHandler, CallbackContext
+from telegram.ext.filters import Filters  # Yeh line update ki gayi hai
 # Bot's Token from BotFather
 TOKEN = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0'
 
