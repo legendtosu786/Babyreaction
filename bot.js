@@ -10,7 +10,11 @@ const token = '7638229482:AAHzcKi2S6Z_Z472lxOUXJv2YOmdOezrnX0';
 const bot = new TelegramBot(token, { polling: true });
 
 // List of emojis to react with
-const myEmoji = ["👍", "❤", "🔥", "🥰", "👏", "😁", "🤔", "🤯", "😱", "🎉", "🤩", "🙏", "👌", "😍", "❤‍🔥", "🌚", "💯", "🤣", "💔", "🇮🇳", "😈", "😭", "🤓", "😇", "🤝", "🤗", "🫡", "🤪", "🗿", "🆒", "💘", "😘", "😎"];
+const myEmoji = [
+  "👍", "❤", "🔥", "🥰", "👏", "😁", "🤔", "🤯", "😱", "🎉", "🤩", "🙏", "👌", "😍", 
+  "❤‍🔥", "🌚", "💯", "🤣", "💔", "🇮🇳", "😈", "😭", "🤓", "😇", "🤝", "🤗", "🫡", 
+  "🤪", "🗿", "🆒", "💘", "😘", "😎"
+];
 
 // Handle /start command
 bot.onText(/\/start/, (msg) => {
@@ -72,6 +76,15 @@ bot.on('message', (msg) => {
 });
 
 console.log('Bot is running...');
+
+// Keep the bot alive by pinging Telegram every 5 minutes
+setInterval(() => {
+  bot.getMe().then((data) => {
+    console.log('Bot is still connected', data);
+  }).catch((error) => {
+    console.error('Error keeping the bot alive', error);
+  });
+}, 1000 * 60 * 5); // Check every 5 minutes
 
 // Set up a basic Express server to listen on port 8000
 app.get('/', (req, res) => {
