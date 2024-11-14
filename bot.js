@@ -9,6 +9,14 @@ const bot = new TelegramBot(token, { polling: true });
 // List of emojis to react with
 const emojis = ['👍', '😄', '❤️', '😂', '🎉', '🙌', '😎', '🔥', '💯', '👀'];
 
+// Handle /start command
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+
+  // Send a welcome message when the user starts the bot
+  bot.sendMessage(chatId, 'Hello! I am your Emoji Bot. Send me a message and I will reply with a random emoji!');
+});
+
 // Listen for any new messages
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
