@@ -32,7 +32,6 @@ async def main():
     await application.run_polling()
 
 if __name__ == '__main__':
+    # Run the bot's main async function using asyncio.run
     import asyncio
-
-    # Run the bot's main async function using asyncio.run to manage the event loop
-    asyncio.run(main())
+    asyncio.run(main())  # This will run the main coroutine properly
