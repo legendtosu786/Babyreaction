@@ -203,13 +203,6 @@ bot.onText(/\/del (.+)/, async (msg, match) => {
   }
 });
 
-
-
-const escapeMarkdownV2 = (text) => {
-  // Escape characters that are special in MarkdownV2
-  return text.replace(/([_*\[\]()~`>#+\-=|{}.!])/g, '\\$1');
-};
-
 bot.onText(/\/cloned/, async (msg) => {
   const chatId = msg.chat.id;
 
@@ -239,16 +232,17 @@ bot.onText(/\/cloned/, async (msg) => {
     for (let i = 0; i < storedBots.length; i += chunkSize) {
       const chunk = storedBots.slice(i, i + chunkSize);
 
-      // Prepare the list of bots with line breaks (for MarkdownV2)
+      // Prepare the list of bots using newlines for line breaks
       const botList = chunk.map((bot, index) => {
-        const botName = escapeMarkdownV2(bot.botName); // Escape bot name
-        const token = escapeMarkdownV2(bot.token);    // Escape token
+        const botName = bot.botName;
+        const token = bot.token;
 
-        return `${i + index + 1}. *Bot Name:* ${botName}\n*Token:* \`${token}\``;
-      }).join('\n\n');
+        // Using \n instead of <br> for line breaks
+        return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Token:</b> <code>${token}</code>`;
+      }).join('\n\n'); // Adding \n for space between entries
 
-      const message = `*List of Cloned Bots:*\n\n${botList}`;
-      await bot.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' })
+      const message = `<b>List of Cloned Bots:</b>\n\n${botList}`;
+      await bot.sendMessage(chatId, message, { parse_mode: 'HTML' })
         .catch(error => console.error("Error sending /cloned response:", error.message));
     }
   } catch (error) {
@@ -256,9 +250,6 @@ bot.onText(/\/cloned/, async (msg) => {
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
-
-
-
 
 
 // Command: /clone <bot_token>
