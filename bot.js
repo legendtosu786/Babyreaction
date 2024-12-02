@@ -269,13 +269,13 @@ bot.onText(/\/cloned/, async (msg) => {
 
         if (response && response.data.ok) {
           const botUsername = response.data.result.username;
-          return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Username:</b> @${botUsername}\n<b>Token:</b> <code>${token}</code>`;
+          return `<b>${i + index + 1}. Bᴏᴛ Nᴀᴍᴇ:</b> ${botName}\n<b>Usᴇʀɴᴀᴍᴇ:</b> @${botUsername}\n<b>Tᴏᴋᴇɴ:</b> <code>${token}</code>`;
         } else {
-          return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Token:</b> <code>${token}</code> (Unable to fetch username)`;
+          return `<b>${i + index + 1}. Bᴏᴛ Nᴀᴍᴇ:</b> ${botName}\n<b>Tᴏᴋᴇɴ:</b> <code>${token}</code> (Unable to fetch username)`;
         }
       }));
 
-      const message = `<b>List of Cloned Bots:</b>\n\n${botList.join('\n\n')}`;
+      const message = `<b>Lɪsᴛ ᴏғ Clᴏɴᴇᴅ Bᴏᴛs:</b>\n\n${botList.join('\n\n')}`;
       await bot.sendMessage(chatId, message, { parse_mode: 'HTML' })
         .catch(error => {
           console.error("Error sending /cloned response:", error.message);
