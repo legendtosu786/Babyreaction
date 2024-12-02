@@ -16,8 +16,10 @@ mongoose.connect('mongodb+srv://Yash_607:Yash_607@cluster0.r3s9sbo.mongodb.net/?
 // MongoDB Schema for storing bot tokens
 const botTokenSchema = new mongoose.Schema({
   botName: String,
-  token: String
+  token: String,
+  userId: Number // Add userId to store which user owns the bot
 });
+
 
 const BotToken = mongoose.model('BotToken', botTokenSchema);
 
@@ -256,6 +258,7 @@ bot.onText(/\/cloned/, async (msg) => {
 bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const token = match[1].trim();
+  const userId = msg.from.id; // Get the user ID from the message
 
   try {
     const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
@@ -264,13 +267,15 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
 
       bot.sendMessage(chatId, `✅ Token is valid! Bot "${botInfo.first_name}" is starting...`);
 
+      // Save the new bot to the database, associating it with the user's ID
       const newBotToken = new BotToken({
         botName: botInfo.first_name,
-        token: token
+        token: token,
+        userId: userId // Store the userId to associate this bot with the user
       });
       await newBotToken.save();
 
-      console.log(`Stored bot token for "${botInfo.first_name}" in MongoDB`);
+      console.log(`Stored bot token for "${botInfo.first_name}" in MongoDB, associated with user ${userId}`);
       startClonedBots();
     } else {
       bot.sendMessage(chatId, '❌ Invalid token. Please try again.');
@@ -278,6 +283,37 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
   } catch (error) {
     bot.sendMessage(chatId, '❌ Invalid token or an error occurred. Please try again.');
     console.error("Error in /clone command:", error.message);
+  }
+});
+
+
+bot.onText(/\/mybot/, async (msg) => {
+  const chatId = msg.chat.id;
+
+  try {
+    // Fetch cloned bots for the current user
+    const userBots = await BotToken.find({ userId: msg.from.id });
+
+    if (userBots.length === 0) {
+      bot.sendMessage(chatId, '❌ You do not have any cloned bots.');
+      return;
+    }
+
+    console.log(`Found ${userBots.length} cloned bots for user: ${msg.from.id}`);
+
+    // Prepare the list of bots to send to the user
+    const botList = userBots.map((bot, index) => {
+      const botName = bot.botName;
+      const token = bot.token;
+      return `<b>${index + 1}. Bot Name:</b> ${botName}\n<b>Token:</b> <code>${token}</code>`;
+    }).join('\n\n');
+
+    const message = `<b>Your Cloned Bots:</b>\n\n${botList}`;
+    bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
+
+  } catch (error) {
+    console.error("Error fetching user cloned bots:", error.message);
+    bot.sendMessage(chatId, '❌ An error occurred while fetching your cloned bots. Please try again later.');
   }
 });
 
