@@ -125,7 +125,7 @@ async function startClonedBots() {
       // Command: /start for the cloned bot
       clonedBot.onText(/\/start/, (msg) => {
         const chatId = msg.chat.id;
-        const text = `Hi, I am a cloned bot of *${botData.botName}*! \n\nI will react to your messages with random emojis.`;
+        const text = `Hɪ, ɪ ᴀᴍ ᴀ clᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT ! \n\nAᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴘ/ᴄʜᴀɴɴᴇʟ I ᴡɪʟʟ ʀᴇᴀᴄᴛ ᴛᴏ ʏᴏᴜʀ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ ʀᴀɴᴅᴏᴍ ᴇᴍᴏᴊɪ .`;
 
         const escapedText = escapeMarkdownV2(text);
 
