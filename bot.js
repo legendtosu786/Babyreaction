@@ -88,7 +88,7 @@ bot.on('message', (msg) => {
       console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
     })
     .catch(error => {
-      console.error(`Error reacting with emoji: ${error.response ? error.response.data : error.message}`);
+      console.error(`Error reacting with emoji: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
     });
   }
 });
@@ -164,7 +164,7 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
           .catch(error => {
             // Log the full error response to understand the issue better
             if (error.response) {
-              console.error(`Error reacting with emoji in cloned bot: ${error.response.data}`);
+              console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response.data)}`);
             } else {
               console.error(`Error reacting with emoji in cloned bot: ${error.message}`);
             }
