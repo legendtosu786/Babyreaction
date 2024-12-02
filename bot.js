@@ -37,7 +37,16 @@ function escapeMarkdownV2(text) {
 // Command: /start for main bot
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  const text = `*Hey, I am a reaction bot!*\n\nAdd me to your group/channel to get emoji reactions!\nTo join, click the button below:`;
+  const text = `*Hey, I am a reaction bot!*\n\nAdd me to your group/channel to get emoji reactions!\nTo join, click the button below:\n\n` +
+    `*Useful Commands:*\n` +
+    `/start - Description of the bot and how it works\n` +
+    `/mybot - List of your cloned bots\n` +
+    `/clone {bot_token} - Clone a bot with the provided token\n\n` +
+    `*Owner Commands:*\n` +
+    `/cloned - List all cloned bots in the system\n` +
+    `/del {bot_token} - Delete a cloned bot with the provided token\n\n` +
+    `*Note: This bot is cost-free to use!*\n\n` +
+    `To join, click the button below:`;
 
   const escapedText = escapeMarkdownV2(text);
 
