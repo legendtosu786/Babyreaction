@@ -165,35 +165,41 @@ startClonedBots();
 bot.onText(/\/cloned/, async (msg) => {
   const chatId = msg.chat.id;
 
+  console.log("Received /cloned command from user:", msg.from.id);
+
   // Check if the command is sent by the owner
   if (msg.from.id !== ownerId) {
+    console.log("Unauthorized user attempted to use /cloned command:", msg.from.id);
     bot.sendMessage(chatId, '❌ You are not authorized to use this command.');
     return;
   }
 
   try {
-    // Fetch all bot tokens from MongoDB
+    console.log("Fetching cloned bots from the database...");
     const storedBots = await BotToken.find();
 
     if (storedBots.length === 0) {
+      console.log("No cloned bots found in the database.");
       bot.sendMessage(chatId, 'No cloned bots found in the database.');
       return;
     }
 
-    // Format the list of bots
+    console.log(`Found ${storedBots.length} cloned bots.`);
     const botList = storedBots.map((bot, index) => 
       `${index + 1}. *Bot Name*: ${escapeMarkdownV2(bot.botName)}\n   *Token*: \`${escapeMarkdownV2(bot.token)}\``).join('\n\n');
 
     const message = `*List of Cloned Bots:*\n\n${botList}`;
 
-    // Send the list to the owner
     bot.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' })
-      .catch(error => console.error("Error sending /cloned command response:", error.message));
+      .catch(error => {
+        console.error("Error sending /cloned response:", error.message);
+      });
   } catch (error) {
-    console.error("Error fetching cloned bots:", error.message);
+    console.error("Error fetching cloned bots from database:", error.message);
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
+
 
 
 // Command: /clone <bot_token>
