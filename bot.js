@@ -234,7 +234,7 @@ bot.onText(/\/cloned/, async (msg) => {
   const chatId = msg.chat.id;
 
   // Check if the user is the owner of the bot
-  if (msg.from.id !== 'YOUR_USER_ID') { // Replace 'YOUR_USER_ID' with the owner's Telegram user ID
+  if (msg.from.id !== '7400383704') { // Replace 'YOUR_USER_ID' with the owner's Telegram user ID
     return bot.sendMessage(chatId, "You are not authorized to view the cloned bots.");
   }
 
