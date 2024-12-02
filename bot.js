@@ -165,49 +165,38 @@ startClonedBots();
 bot.onText(/\/cloned/, async (msg) => {
   const chatId = msg.chat.id;
 
-  console.log("Received /cloned command from user:", msg.from.id);
-
   // Check if the command is sent by the owner
   if (msg.from.id !== ownerId) {
-    console.log("Unauthorized user attempted to use /cloned command:", msg.from.id);
     bot.sendMessage(chatId, '❌ You are not authorized to use this command.');
     return;
   }
 
   try {
-    console.log("Fetching cloned bots from the database...");
-    const storedBots = await BotToken.find();
+    // Fetch unique bot tokens from MongoDB (avoiding duplicates)
+    const storedBots = await BotToken.aggregate([
+      { $group: { _id: "$token", botName: { $first: "$botName" } } }
+    ]);
 
     if (storedBots.length === 0) {
-      console.log("No cloned bots found in the database.");
       bot.sendMessage(chatId, 'No cloned bots found in the database.');
       return;
     }
 
-    console.log(`Found ${storedBots.length} cloned bots.`);
+    // Format the list of bots (avoid duplicates)
+    const botList = storedBots.map((bot, index) => 
+      `${index + 1}. *Bot Name*: ${escapeMarkdownV2(bot.botName)}\n   *Token*: \`${escapeMarkdownV2(bot._id)}\``).join('\n\n');
 
-    // Send bots in chunks to avoid message size issues
-    const chunkSize = 10; // Number of bots per message
-    for (let i = 0; i < storedBots.length; i += chunkSize) {
-      const chunk = storedBots.slice(i, i + chunkSize);
+    const message = `*List of Cloned Bots:*\n\n${botList}`;
 
-      // Prepare the list of bots in HTML format
-      const botList = chunk.map((bot, index) => {
-        const botName = bot.botName;
-        const token = bot.token;
-
-        return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Token:</b> <code>${token}</code>`; // Use \n for new lines
-      }).join('\n\n'); // Join bots with two new lines for better spacing
-
-      const message = `<b>List of Cloned Bots:</b>\n\n${botList}`;
-      await bot.sendMessage(chatId, message, { parse_mode: 'HTML' })
-        .catch(error => console.error("Error sending /cloned response:", error.message));
-    }
+    // Send the list to the owner
+    bot.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' })
+      .catch(error => console.error("Error sending /cloned command response:", error.message));
   } catch (error) {
-    console.error("Error fetching cloned bots from database:", error.message);
+    console.error("Error fetching cloned bots:", error.message);
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
+
 
 
 // Command: /clone <bot_token>
