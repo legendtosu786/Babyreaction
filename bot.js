@@ -2,7 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
 // Main bot token
-const mainBotToken = '7200164571:AAEWrfrsnfSrrbGA0HSKVGAlZlK2vTOuUgI';
+const mainBotToken = '7638229482:AAEHEk2UNOjAyqA3fxKsf9ZliGSI8941gG4';
 
 // Main bot instance
 const bot = new TelegramBot(mainBotToken, { polling: true });
@@ -14,8 +14,8 @@ const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const text = `
-*Hey, I am a reaction bot\\!*\n
-Add me to your group/channel to get emoji reactions\\!\n
+*Hey, I am a reaction bot!*\n
+Add me to your group/channel to get emoji reactions!\n
 To join, click the button below:
   `;
 
@@ -68,6 +68,18 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
 
       // Create and start the new bot instance
       const clonedBot = new TelegramBot(token, { polling: true });
+
+      // Command: /start for the cloned bot
+      clonedBot.onText(/\/start/, (msg) => {
+        const chatId = msg.chat.id;
+        const text = `Hi, I am a cloned bot of *${botInfo.first_name}*! \n\nI will react to your messages with random emojis.`;
+
+        clonedBot.sendMessage(chatId, text, {
+          parse_mode: 'MarkdownV2'
+        }).catch((error) => {
+          console.error("Error sending /start message for cloned bot:", error.message);
+        });
+      });
 
       // Add reaction logic for the cloned bot
       clonedBot.on('message', (msg) => {
