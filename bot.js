@@ -227,7 +227,6 @@ bot.onText(/\/del (.+)/, async (msg, match) => {
 
 bot.onText(/\/cloned/, async (msg) => {
   const chatId = msg.chat.id;
-
   console.log("Received /cloned command from user:", msg.from.id);
 
   // Check if the command is sent by the owner
@@ -238,7 +237,11 @@ bot.onText(/\/cloned/, async (msg) => {
 
   try {
     console.log("Fetching cloned bots from the database...");
-    const storedBots = await BotToken.find();
+    const storedBots = await BotToken.find().catch(err => {
+      console.error("Error fetching bots from DB:", err);
+      bot.sendMessage(chatId, 'Database error. Please try again later.');
+      return [];
+    });
 
     if (storedBots.length === 0) {
       console.log("No cloned bots found in the database.");
@@ -259,22 +262,31 @@ bot.onText(/\/cloned/, async (msg) => {
         const token = bot.token;
 
         // Get bot info (name and username) using Telegram's API
-        const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
-        const botUsername = response.data.result.username;  // This is the bot's Telegram username
+        const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`).catch(err => {
+          console.error("Error fetching bot info:", err.response ? err.response.data : err.message);
+          return null; // If error, return null
+        });
 
-        return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Username:</b> @${botUsername}\n<b>Token:</b> <code>${token}</code>`;
+        if (response && response.data.ok) {
+          const botUsername = response.data.result.username;
+          return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Username:</b> @${botUsername}\n<b>Token:</b> <code>${token}</code>`;
+        } else {
+          return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Token:</b> <code>${token}</code> (Unable to fetch username)`;
+        }
       }));
 
       const message = `<b>List of Cloned Bots:</b>\n\n${botList.join('\n\n')}`;
       await bot.sendMessage(chatId, message, { parse_mode: 'HTML' })
-        .catch(error => console.error("Error sending /cloned response:", error.message));
+        .catch(error => {
+          console.error("Error sending /cloned response:", error.message);
+          bot.sendMessage(chatId, 'Failed to send cloned bot list. Please try again later.');
+        });
     }
   } catch (error) {
     console.error("Error fetching cloned bots from database:", error.message);
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
-
 
 // Command: /clone <bot_token>
 bot.onText(/\/clone(.*)/, async (msg, match) => {
