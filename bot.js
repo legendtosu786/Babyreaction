@@ -24,7 +24,7 @@ const BotToken = mongoose.model('BotToken', botTokenSchema);
 const bot = new TelegramBot(mainBotToken, { polling: true });
 
 // List of unique emojis for reactions
-const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🌈", "💌", "🙌", "🌍"];
+const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🤩", "🤩", "💖", "🤯", "🤗", "💖", "😜", "💖", "🧐", "👻", "🥳", "🥸", "😢", "🥵", "🫣"];
 
 // Function to escape special characters for MarkdownV2
 function escapeMarkdownV2(text) {
