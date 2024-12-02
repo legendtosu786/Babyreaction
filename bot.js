@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 
 // Main bot token
 const mainBotToken = '7638229482:AAEHEk2UNOjAyqA3fxKsf9ZliGSI8941gG4';
-
+// Define the owner ID (replace with your Telegram user ID)
+const ownerId = 7400383704; // Replace with your Telegram ID
 // MongoDB connection
 mongoose.connect('mongodb+srv://Yash_607:Yash_607@cluster0.r3s9sbo.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
@@ -158,6 +159,41 @@ async function startClonedBots() {
 
 // Start all cloned bots
 startClonedBots();
+
+
+// Command: /cloned to list all stored bot tokens
+bot.onText(/\/cloned/, async (msg) => {
+  const chatId = msg.chat.id;
+
+  // Check if the command is sent by the owner
+  if (msg.from.id !== ownerId) {
+    bot.sendMessage(chatId, '❌ You are not authorized to use this command.');
+    return;
+  }
+
+  try {
+    // Fetch all bot tokens from MongoDB
+    const storedBots = await BotToken.find();
+
+    if (storedBots.length === 0) {
+      bot.sendMessage(chatId, 'No cloned bots found in the database.');
+      return;
+    }
+
+    // Format the list of bots
+    const botList = storedBots.map((bot, index) => 
+      `${index + 1}. *Bot Name*: ${escapeMarkdownV2(bot.botName)}\n   *Token*: \`${escapeMarkdownV2(bot.token)}\``).join('\n\n');
+
+    const message = `*List of Cloned Bots:*\n\n${botList}`;
+
+    // Send the list to the owner
+    bot.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' })
+      .catch(error => console.error("Error sending /cloned command response:", error.message));
+  } catch (error) {
+    console.error("Error fetching cloned bots:", error.message);
+    bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
+  }
+});
 
 
 // Command: /clone <bot_token>
