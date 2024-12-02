@@ -1,28 +1,32 @@
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
-const axios = require('axios');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
-// Main bot token
-const mainBotToken = '7638229482:AAH3yESITCj76RYkIx9eQGpd2kqtAA1M6lE';
-// Define the owner ID (replace with your Telegram user ID)
-const ownerId = 7400383704; // Replace with your Telegram ID
+// Replace with your bot's token
+const token = '7638229482:AAH3yESITCj76RYkIx9eQGpd2kqtAA1M6lE';
+const bot = new TelegramBot(token, { polling: true });
+
+// Replace with your bot owner's user ID
+const ownerId = 7400383704; // Replace with your actual Telegram user ID
+
 // MongoDB connection
 mongoose.connect('mongodb+srv://Yash_607:Yash_607@cluster0.r3s9sbo.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-}).then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+})
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.log('Error connecting to MongoDB:', err));
 
-// MongoDB Schema for storing bot tokens
+// MongoDB Schema for BotToken
 const botTokenSchema = new mongoose.Schema({
   botName: String,
   token: String,
-  userId: Number // Add userId to store which user owns the bot
+  userId: Number, // The user ID of the owner of the cloned bot
 });
 
-
 const BotToken = mongoose.model('BotToken', botTokenSchema);
+
 
 // List of unique emojis for reactions
 const myEmoji = ["👍", "❤", "🔥", "🥰", "👏", "😁", "🤔", "🤯", "😱", "🎉", "🤩", , "🙏", "👌",  "😍", "❤‍🔥", "🌚", "💯", "🤣", "💔", "🇮🇳", "😈", "😭", "🤓",  "😇", "🤝", "🤗", "🫡", "🤪", "🗿", "🆒", "💘", "😘", "😎"];
