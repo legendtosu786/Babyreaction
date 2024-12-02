@@ -10,6 +10,11 @@ const bot = new TelegramBot(mainBotToken, { polling: true });
 // List of unique emojis for reactions
 const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🌈", "💌", "🙌", "🌍"];
 
+// Function to escape special characters for MarkdownV2
+function escapeMarkdownV2(text) {
+  return text.replace(/([_*\[\]()~`>#+-=|{}.!])/g, '\\$1');
+}
+
 // Command: /start
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -19,7 +24,9 @@ Add me to your group/channel to get emoji reactions!\n
 To join, click the button below:
   `;
 
-  bot.sendMessage(chatId, text, {
+  const escapedText = escapeMarkdownV2(text); // Escape special characters
+
+  bot.sendMessage(chatId, escapedText, {
     parse_mode: 'MarkdownV2',
     reply_markup: {
       inline_keyboard: [
@@ -74,7 +81,9 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
         const chatId = msg.chat.id;
         const text = `Hi, I am a cloned bot of *${botInfo.first_name}*! \n\nI will react to your messages with random emojis.`;
 
-        clonedBot.sendMessage(chatId, text, {
+        const escapedText = escapeMarkdownV2(text); // Escape special characters
+
+        clonedBot.sendMessage(chatId, escapedText, {
           parse_mode: 'MarkdownV2'
         }).catch((error) => {
           console.error("Error sending /start message for cloned bot:", error.message);
