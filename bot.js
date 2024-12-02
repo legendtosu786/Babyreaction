@@ -101,7 +101,7 @@ async function startClonedBots() {
     const storedBots = await BotToken.find();
 
     storedBots.forEach(botData => {
-      const clonedBot = new TelegramBot(botData.token, { polling: { autoStart: false } });
+      const clonedBot = new TelegramBot(botData.token, { polling: { autoStart: true } });
       clonedBot.startPolling(); // Start polling for cloned bot
 
       // Command: /start for the cloned bot
