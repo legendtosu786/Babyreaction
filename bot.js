@@ -37,7 +37,7 @@ function escapeMarkdownV2(text) {
 // Command: /start for main bot
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  const text = `*Hᴇʏ, ɪ ᴀᴍ ᴀ ᴀᴜᴛᴏ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ!* \n\n` +
+  const text = `*Hᴇʏ, ɪ ᴀᴍ ᴀ ᴀᴜᴛᴏ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ\!* \n\n` +
     `Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴ!\n` +
     `Tᴏ ᴊᴏɪɴ, ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ:\n\n` +
     `*Useful Commands:*\n` +
@@ -47,12 +47,13 @@ bot.onText(/\/start/, (msg) => {
     `*Owner Commands:*\n` +
     `/cloned - List all cloned bots in the system\n` +
     `/del {bot_token} - Delete a cloned bot with the provided token\n\n` +
-    `*Note: This bot is cost-free to use!*\n\n` +
+    `*Note: This bot is cost-free to use!\*\n\n` +
     `To join, click the button below:`;
 
   // Escape special characters for MarkdownV2
   const escapedText = text
-    .replace(/([_*[\]()~`>#+=\|-])/g, '\\$1'); // Escape special characters for MarkdownV2
+    .replace(/([_*[\]()~`>#+=\|-])/g, '\\$1') // Escape special characters for MarkdownV2
+    .replace(/!/g, '\\!'); // Escape exclamation marks specifically
 
   bot.sendMessage(chatId, escapedText, {
     parse_mode: 'MarkdownV2', // Use MarkdownV2 for proper formatting
@@ -68,6 +69,7 @@ bot.onText(/\/start/, (msg) => {
     console.error("Error sending /start message:", error.message);
   });
 });
+
 
 
 // Polling error handler
