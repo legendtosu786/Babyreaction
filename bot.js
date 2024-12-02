@@ -206,6 +206,11 @@ bot.onText(/\/del (.+)/, async (msg, match) => {
 
 
 // Command: /cloned to list all stored bot tokens
+// Function to escape characters that need to be escaped for MarkdownV2
+function escapeMarkdownV2(text) {
+  return text.replace(/([_*[\]()~`>#+-=|{}.!])/g, '\\$1');
+}
+
 bot.onText(/\/cloned/, async (msg) => {
   const chatId = msg.chat.id;
 
@@ -224,13 +229,13 @@ bot.onText(/\/cloned/, async (msg) => {
       return;
     }
 
-    // Format the list of bots
+    // Format the list of bots with proper escaping
     const botList = storedBots.map((bot, index) => 
       `${index + 1}. *Bot Name*: ${escapeMarkdownV2(bot.botName)}\n   *Token*: \`${escapeMarkdownV2(bot.token)}\``).join('\n\n');
 
     const message = `*List of Cloned Bots:*\n\n${botList}`;
 
-    // Send the list to the owner
+    // Send the list to the owner with MarkdownV2
     bot.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' })
       .catch(error => console.error("Error sending /cloned command response:", error.message));
   } catch (error) {
@@ -238,9 +243,6 @@ bot.onText(/\/cloned/, async (msg) => {
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
-
-
-
 
 
 // Command: /clone <bot_token>
