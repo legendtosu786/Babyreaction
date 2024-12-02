@@ -12,20 +12,6 @@ const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩
 
 // Function to escape special characters for MarkdownV2
 function escapeMarkdownV2(text) {
-const TelegramBot = require('node-telegram-bot-api');
-const axios = require('axios');
-
-// Main bot token
-const mainBotToken = '7638229482:AAEHEk2UNOjAyqA3fxKsf9ZliGSI8941gG4';
-
-// Main bot instance
-const bot = new TelegramBot(mainBotToken, { polling: true });
-
-// List of unique emojis for reactions
-const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🌈", "💌", "🙌", "🌍"];
-
-// Function to escape special characters for MarkdownV2
-function escapeMarkdownV2(text) {
   return text.replace(/([_*\[\]()~`>#+-=|{}.!])/g, '\\$1');
 }
 
