@@ -55,7 +55,7 @@ bot.on('message', (msg) => {
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
-      reaction: doEmoji  // Directly pass the emoji
+      reaction: doEmoji  // Directly pass the emoji as reaction
     })
     .then(response => {
       console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
