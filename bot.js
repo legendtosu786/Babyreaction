@@ -32,7 +32,6 @@ function escapeMarkdownV2(text) {
 }
 
 // Command: /start for main bot
-// Command: /start for main bot
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   const text = `
@@ -65,7 +64,6 @@ To join, click the button below:
     });
   }
 });
-
 
 // Polling error handler
 bot.on('polling_error', (error) => {
@@ -103,7 +101,6 @@ bot.on('message', (msg) => {
   }
 });
 
-// Command: /clone <bot_token> (For Cloning Bots)
 // Command: /clone <bot_token> (For Cloning Bots)
 bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
@@ -150,57 +147,38 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
         });
       });
 
-      console.log(`Cloned bot "${botInfo.first_name}" is running...`);
-    } else {
-      bot.sendMessage(chatId, '❌ Invalid token. Please try again.');
-    }
-  } catch (error) {
-    bot.sendMessage(chatId, '❌ Invalid token or an error occurred. Please try again.');
-    console.error("Error in /clone command:", error.message);
-  }
-});
+      // Add reaction logic for the cloned bot
+      clonedBot.on('message', (msg) => {
+        const clonedChatId = msg.chat.id;
+        const clonedMessageId = msg.message_id;
 
+        // Skip if message is a command or non-reaction message
+        if (msg.text && msg.text.startsWith('/')) return;
 
-        // Add reaction logic for the cloned bot
-        clonedBot.on('message', (msg) => {
-          const clonedChatId = msg.chat.id;
-          const clonedMessageId = msg.message_id;
+        // Select a random emoji from the list
+        const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-          // Skip if message is a command or non-reaction message
-          if (msg.text && msg.text.startsWith('/')) return;
-
-          // Select a random emoji from the list
-          const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
-
-          // Send emoji as a reaction using setMessageReaction API for cloned bot
-          axios.post(`https://api.telegram.org/bot${storedBot.token}/setMessageReaction`, {
-            chat_id: clonedChatId,
-            message_id: clonedMessageId,
-            reaction: JSON.stringify([
-              {
-                type: "emoji",
-                emoji: clonedEmoji,
-                is_big: true // Optional: To make the reaction big (true/false)
-              }
-            ])
-          })
-          .then(response => {
-            console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
-          })
-          .catch(error => {
-            // Log the full error response to understand the issue better
-            if (error.response) {
-              console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response.data)}`);
-            } else {
-              console.error(`Error reacting with emoji in cloned bot: ${error.message}`);
+        // Send emoji as a reaction using setMessageReaction API for cloned bot
+        axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
+          chat_id: clonedChatId,
+          message_id: clonedMessageId,
+          reaction: JSON.stringify([
+            {
+              type: "emoji",
+              emoji: clonedEmoji,
+              is_big: true // Optional: To make the reaction big (true/false)
             }
-          });
+          ])
+        })
+        .then(response => {
+          console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
+        })
+        .catch(error => {
+          console.error(`Error reacting with emoji in cloned bot: ${error.message}`);
         });
+      });
 
-        console.log(`Cloned bot "${botInfo.first_name}" is running...`);
-      } else {
-        console.log('No token found for the cloned bot.');
-      }
+      console.log(`Cloned bot "${botInfo.first_name}" is running...`);
     } else {
       bot.sendMessage(chatId, '❌ Invalid token. Please try again.');
     }
