@@ -35,11 +35,11 @@ function escapeMarkdownV2(text) {
 }
 
 // Command: /start for main bot
-bot.onText(/\/start/, (msg) => {
+bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
-  const text = `*Hᴇʏ, ɪ ᴀᴍ ᴀ ᴀᴜᴛᴏ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ\!* \n\n` +
-    `Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴ!\n` +
-    `Tᴏ ᴊᴏɪɴ, ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ:\n\n` +
+  
+  // Welcome message with bot description and useful commands
+  const text = `*Hey, I am a reaction bot!*\n\nAdd me to your group/channel to get emoji reactions!\nTo join, click the button below:\n\n` +
     `*Useful Commands:*\n` +
     `/start - Description of the bot and how it works\n` +
     `/mybot - List of your cloned bots\n` +
@@ -47,16 +47,13 @@ bot.onText(/\/start/, (msg) => {
     `*Owner Commands:*\n` +
     `/cloned - List all cloned bots in the system\n` +
     `/del {bot_token} - Delete a cloned bot with the provided token\n\n` +
-    `*Note: This bot is cost-free to use!\*\n\n` +
+    `*Note: This bot is cost-free to use!*\n\n` +
     `To join, click the button below:`;
 
-  // Escape special characters for MarkdownV2
-  const escapedText = text
-    .replace(/([_*[\]()~`>#+=\|-])/g, '\\$1') // Escape special characters for MarkdownV2
-    .replace(/!/g, '\\!'); // Escape exclamation marks specifically
+  const escapedText = escapeMarkdownV2(text);
 
   bot.sendMessage(chatId, escapedText, {
-    parse_mode: 'MarkdownV2', // Use MarkdownV2 for proper formatting
+    parse_mode: 'MarkdownV2',
     reply_markup: {
       inline_keyboard: [
         [{
@@ -69,6 +66,7 @@ bot.onText(/\/start/, (msg) => {
     console.error("Error sending /start message:", error.message);
   });
 });
+
 
 
 
