@@ -15,7 +15,7 @@ function escapeMarkdownV2(text) {
   return text.replace(/([_*\[\]()~`>#+-=|{}.!])/g, '\\$1');
 }
 
-// Command: /start
+// Command: /start for main bot
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const text = `
@@ -41,7 +41,7 @@ To join, click the button below:
   });
 });
 
-// Listen for new messages and send a random emoji as a reply
+// Listen for new messages and send a random emoji as a reaction (Main bot)
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageId = msg.message_id;
@@ -51,22 +51,22 @@ bot.on('message', (msg) => {
     // Select a random emoji from the list
     const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-    // Send the emoji as a reaction using setMessageReaction API
+    // Send the emoji as a reaction using setMessageReaction API (Main Bot)
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
       reaction: doEmoji  // Send the emoji directly as a string (not JSON)
     })
     .then(response => {
-      console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
+      console.log(`Main bot reacted with ${doEmoji} to message: ${msg.text}`);
     })
     .catch(error => {
-      console.error("Error reacting with emoji:", error.response ? error.response.data : error.message);
+      console.error("Error reacting with emoji (Main bot):", error.response ? error.response.data : error.message);
     });
   }
 });
 
-// Command: /clone <bot_token>
+// Command: /clone <bot_token> (For Cloning Bots)
 bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const token = match[1].trim();
@@ -101,7 +101,7 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
         const clonedChatId = msg.chat.id;
         const clonedMessageId = msg.message_id;
 
-        // Skip if message is a command
+        // Skip if message is a command or non-reaction message
         if (msg.text && msg.text.startsWith('/')) return;
 
         // Select a random emoji from the list
