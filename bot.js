@@ -184,11 +184,11 @@ const clonedBots = {};
 bot.onText(/\/del (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const token = match[1].trim(); // Extract the token from the command
-  
+
   // Check if the command is sent by the owner
   if (msg.from.id !== ownerId) {
-    bot.sendMessage(chatId, '❌ You are not authorized to use this command.');
-    return;
+    console.log(`Unauthorized access attempt by user ${msg.from.id} to /del command.`);
+    return; // Do nothing for unauthorized users
   }
 
   try {
@@ -196,7 +196,7 @@ bot.onText(/\/del (.+)/, async (msg, match) => {
     const botToDelete = await BotToken.findOne({ token: token });
 
     if (!botToDelete) {
-      bot.sendMessage(chatId, '❌ No bot found with this token.');
+      bot.sendMessage(chatId, '❌ Nᴏ ʙᴏᴛ ғᴏᴜɴᴅ ᴡɪᴛʜ ᴛʜɪs ᴛᴏᴋᴇɴ.');
       return;
     }
 
@@ -210,14 +210,18 @@ bot.onText(/\/del (.+)/, async (msg, match) => {
     }
 
     // Send feedback to the owner
-    bot.sendMessage(chatId, `✅ The bot "${botToDelete.botName}" has been deleted successfully and stopped.`);
-    
+    bot.sendMessage(
+      chatId,
+      `✅ Tʜᴇ ʙᴏᴛ "${botToDelete.botName}" ʜᴀs ʙᴇᴇɴ ᴅᴇʟᴇᴛᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ.`
+    );
+
     console.log(`Deleted and stopped bot "${botToDelete.botName}" with token ${token}`);
   } catch (error) {
     console.error("Error in /del command:", error.message);
-    bot.sendMessage(chatId, '❌ An error occurred while deleting the bot. Please try again.');
+    bot.sendMessage(chatId, '❌ Aɴ ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ ᴡʜɪʟᴇ ᴅᴇʟᴇᴛɪɴɢ ᴛʜᴇ ʙᴏᴛ. ᴘʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ.');
   }
 });
+
 
 bot.onText(/\/cloned/, async (msg) => {
   const chatId = msg.chat.id;
@@ -227,8 +231,7 @@ bot.onText(/\/cloned/, async (msg) => {
   // Check if the command is sent by the owner
   if (msg.from.id !== ownerId) {
     console.log("Unauthorized user attempted to use /cloned command:", msg.from.id);
-    bot.sendMessage(chatId, '❌ You are not authorized to use this command.');
-    return;
+    return; // Do nothing for unauthorized users
   }
 
   try {
@@ -294,7 +297,7 @@ bot.onText(/\/clone(.*)/, async (msg, match) => {
 
       bot.sendMessage(
         chatId,
-        `✅ Token is valid! Bot "${botInfo.first_name}" (@${botInfo.username}) is starting...`
+        `✅ Tᴏᴋᴇɴ ғᴇᴛᴄʜᴇᴅ! Bᴏᴛ "${botInfo.first_name}" (@${botInfo.username}) ɪs sᴛᴀʀᴛɪɴɢ...`
       );
 
       // Save the new bot to the database, associating it with the user's ID
@@ -311,10 +314,10 @@ bot.onText(/\/clone(.*)/, async (msg, match) => {
       );
       startClonedBots();
     } else {
-      bot.sendMessage(chatId, '❌ Invalid token. Please try again.');
+      bot.sendMessage(chatId, '❌ Iɴᴠᴀʟɪᴅ ᴛᴏᴋᴇɴ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ.');
     }
   } catch (error) {
-    bot.sendMessage(chatId, '❌ Invalid token or an error occurred. Please try again.');
+    bot.sendMessage(chatId, '❌ Iɴᴠᴀʟɪᴅ ᴛᴏᴋᴇɴ ᴏʀ ᴀɴ ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ.');
     console.error("Error in /clone command:", error.message);
   }
 });
