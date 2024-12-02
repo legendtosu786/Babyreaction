@@ -1,4 +1,4 @@
-const http = require('http');
+const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const mongoose = require('mongoose');
@@ -393,19 +393,14 @@ async function cleanupDuplicateTokens() {
 setInterval(cleanupDuplicateTokens, 600000); // Cleanup every 10 minutes
 
 
-// HTTP server setup
-const PORT = 8000;
-const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Telegram Bot is running on port 8000');
-  } else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found');
-  }
+const app = express();
+
+// Define a route to handle incoming requests
+app.get('/', (req, res) => {
+  res.send('Auto Reaction Bot is running!');
 });
 
-// Server ko start karen
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Start Express server on port 8000
+app.listen(8000, () => {
+  console.log('Server is running on port 8000');
 });
