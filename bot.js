@@ -72,7 +72,7 @@ bot.on('message', (msg) => {
     // Select a random emoji from the list
     const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-    // Send the emoji as a reaction using Telegram API
+    // Send the emoji as a reaction using HTTP POST request
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
@@ -88,7 +88,7 @@ bot.on('message', (msg) => {
       console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
     })
     .catch(error => {
-      console.error(`Error reacting with emoji: ${error}`);
+      console.error(`Error reacting with emoji: ${error.response ? error.response.data : error.message}`);
     });
   }
 });
@@ -146,7 +146,7 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
           // Select a random emoji from the list
           const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-          // Send emoji reaction for cloned bot
+          // Send emoji as a reaction using setMessageReaction API for cloned bot
           axios.post(`https://api.telegram.org/bot${storedBot.token}/setMessageReaction`, {
             chat_id: clonedChatId,
             message_id: clonedMessageId,
@@ -162,7 +162,12 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
             console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
           })
           .catch(error => {
-            console.error(`Error reacting with emoji in cloned bot: ${error}`);
+            // Log the full error response to understand the issue better
+            if (error.response) {
+              console.error(`Error reacting with emoji in cloned bot: ${error.response.data}`);
+            } else {
+              console.error(`Error reacting with emoji in cloned bot: ${error.message}`);
+            }
           });
         });
 
