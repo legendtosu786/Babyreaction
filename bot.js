@@ -55,7 +55,7 @@ bot.on('message', (msg) => {
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
-      reaction: doEmoji  // Send the emoji directly as a string
+      reaction: doEmoji  // Send the emoji directly as a string (not JSON)
     })
     .then(response => {
       console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
@@ -111,7 +111,7 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
         axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
           chat_id: clonedChatId,
           message_id: clonedMessageId,
-          reaction: clonedEmoji  // Send the emoji directly as a string for cloned bot
+          reaction: clonedEmoji  // Send the emoji directly as a string for cloned bot (not JSON)
         })
         .then(response => {
           console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
