@@ -39,16 +39,16 @@ bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   
   // Welcome message with bot description and useful commands
-  const text = `*Hey, I am a reaction bot!*\n\nAdd me to your group/channel to get emoji reactions!\nTo join, click the button below:\n\n` +
-    `*Useful Commands:*\n` +
-    `/start - Description of the bot and how it works\n` +
-    `/mybot - List of your cloned bots\n` +
-    `/clone {bot_token} - Clone a bot with the provided token\n\n` +
-    `*Owner Commands:*\n` +
-    `/cloned - List all cloned bots in the system\n` +
-    `/del {bot_token} - Delete a cloned bot with the provided token\n\n` +
-    `*Note: This bot is cost-free to use!*\n\n` +
-    `To join, click the button below:`;
+  const text = `𝐇𝐞𝐲, 𝐈 𝐚𝐦 𝐚 𝐚𝐮𝐭𝐨 𝐫𝐞𝐚𝐜𝐭𝐢𝐨𝐧 𝐛𝐨𝐭!\n\nAᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs!\nTᴏ jᴏɪɴ, clɪcᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ:\n\n` +
+    `𝐔𝐒𝐄𝐅𝐔𝐋 𝐂𝐎𝐌𝐌𝐀𝐍𝐃𝐒:\n` +
+    `/start - Sᴛᴀʀᴛ ʏᴏᴜʀ ʙᴏᴛ ᴀɴᴅ ɢᴇᴛ ʜᴇʟᴘ ɪɴғᴏ\n` +
+    `/mybot - Lɪsᴛ ᴏғ ʏᴏᴜʀ ᴄʟᴏɴᴇᴅ ʙᴏᴛ\n` +
+    `/clone {bot_token} - Clᴏɴᴇ ᴀ boᴛ ᴡɪᴛʜ ᴛʜᴇ ᴛᴏᴋᴇɴ @BotFather\n\n` +
+    `𝐎𝐖𝐍𝐄𝐑 𝐂𝐎𝐌𝐌𝐀𝐍𝐃𝐒:\n` +
+    `/cloned - Lɪsᴛ ᴏғ ᴀʟʟ cloɴᴇᴅ ʙᴏᴛ ɪɴ ᴛʜᴇ sʏsᴛᴇᴍ\n` +
+    `/del {username} - Dᴇʟᴇᴛᴇ ᴀ ᴄʟᴏɴᴇᴅ ʙᴏᴛ ɪɴ ᴛʜᴇ sʏsᴛᴇᴍ\n\n` +
+    `𝐍ᴏᴛᴇ: Tʜɪs ʙᴏᴛ ɪs ᴄᴏsᴛ-ғʀᴇᴇ ᴛᴏ ᴜsᴇ!\n\n` +
+    `Tᴏ jᴏɪɴ, clɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ:`;
 
   const escapedText = escapeMarkdownV2(text);
 
