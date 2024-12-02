@@ -160,6 +160,43 @@ async function startClonedBots() {
 // Start all cloned bots
 startClonedBots();
 
+// Command: /del <bot_token> to delete a cloned bot
+bot.onText(/\/del (.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const token = match[1].trim(); // Extract the token from the command
+  
+  // Check if the command is sent by the owner
+  if (msg.from.id !== ownerId) {
+    bot.sendMessage(chatId, '❌ You are not authorized to use this command.');
+    return;
+  }
+
+  try {
+    // Find the bot in the database using the provided token
+    const botToDelete = await BotToken.findOne({ token: token });
+
+    if (!botToDelete) {
+      bot.sendMessage(chatId, '❌ No bot found with this token.');
+      return;
+    }
+
+    // Delete the bot from the database
+    await BotToken.deleteOne({ token: token });
+
+    // Stop the cloned bot associated with this token
+    const clonedBot = new TelegramBot(token, { polling: false });
+    clonedBot.stopPolling();
+
+    // Send feedback to the owner
+    bot.sendMessage(chatId, `✅ The bot "${botToDelete.botName}" has been deleted successfully and stopped.`);
+    
+    console.log(`Deleted bot "${botToDelete.botName}" with token ${token}`);
+  } catch (error) {
+    console.error("Error in /del command:", error.message);
+    bot.sendMessage(chatId, '❌ An error occurred while deleting the bot. Please try again.');
+  }
+});
+
 
 // Command: /cloned to list all stored bot tokens
 bot.onText(/\/cloned/, async (msg) => {
