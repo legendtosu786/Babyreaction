@@ -57,8 +57,8 @@ bot.onText(/\/start/, async (msg) => {
     reply_markup: {
       inline_keyboard: [
         [{
-          text: 'Join 👋',
-          url: 'https://t.me/YOUR_CHANNEL_LINK' // Replace with your channel link
+          text: 'Jᴏɪɴ 👋',
+          url: 'https://t.me/BABY09_WORLD' // Replace with your channel link
         }]
       ]
     }
