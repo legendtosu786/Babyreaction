@@ -196,10 +196,10 @@ bot.onText(/\/cloned/, async (msg) => {
         const botName = bot.botName;
         const token = bot.token;
 
-        return `<b>${i + index + 1}. Bot Name:</b> ${botName}<br><b>Token:</b> <code>${token}</code>`; 
-      }).join('<br><br>');
+        return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Token:</b> <code>${token}</code>`; // Use \n for new lines
+      }).join('\n\n'); // Join bots with two new lines for better spacing
 
-      const message = `<b>List of Cloned Bots:</b><br><br>${botList}`;
+      const message = `<b>List of Cloned Bots:</b>\n\n${botList}`;
       await bot.sendMessage(chatId, message, { parse_mode: 'HTML' })
         .catch(error => console.error("Error sending /cloned response:", error.message));
     }
@@ -208,8 +208,6 @@ bot.onText(/\/cloned/, async (msg) => {
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
-
-
 
 
 // Command: /clone <bot_token>
