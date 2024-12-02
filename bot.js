@@ -55,13 +55,19 @@ bot.on('message', (msg) => {
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
-      reaction: doEmoji  // Send the emoji directly as a string (not JSON)
+      reaction: JSON.stringify([
+        {
+          type: "emoji",
+          emoji: doEmoji,
+          is_big: true // Optional: To make the reaction big (true/false)
+        }
+      ])
     })
     .then(response => {
-      console.log(`Main bot reacted with ${doEmoji} to message: ${msg.text}`);
+      console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
     })
     .catch(error => {
-      console.error("Error reacting with emoji (Main bot):", error.response ? error.response.data : error.message);
+      console.error(`Error reacting with emoji: ${error}`);
     });
   }
 });
@@ -109,17 +115,24 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
 
         // Send emoji as a reaction using setMessageReaction API for cloned bot
         axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
-          chat_id: clonedChatId,
-          message_id: clonedMessageId,
-          reaction: clonedEmoji  // Send the emoji directly as a string for cloned bot (not JSON)
-        })
-        .then(response => {
-          console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
-        })
-        .catch(error => {
-          console.error("Error reacting with emoji in cloned bot:", error.response ? error.response.data : error.message);
-        });
-      });
+      chat_id: chatId,
+      message_id: messageId,
+      reaction: JSON.stringify([
+        {
+          type: "emoji",
+          emoji: doEmoji,
+          is_big: true // Optional: To make the reaction big (true/false)
+        }
+      ])
+    })
+    .then(response => {
+      console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
+    })
+    .catch(error => {
+      console.error(`Error reacting with emoji: ${error}`);
+    });
+  }
+});
 
       console.log(`Cloned bot "${botInfo.first_name}" is running...`);
     } else {
