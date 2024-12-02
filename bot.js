@@ -12,6 +12,20 @@ const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩
 
 // Function to escape special characters for MarkdownV2
 function escapeMarkdownV2(text) {
+const TelegramBot = require('node-telegram-bot-api');
+const axios = require('axios');
+
+// Main bot token
+const mainBotToken = '7638229482:AAEHEk2UNOjAyqA3fxKsf9ZliGSI8941gG4';
+
+// Main bot instance
+const bot = new TelegramBot(mainBotToken, { polling: true });
+
+// List of unique emojis for reactions
+const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🌈", "💌", "🙌", "🌍"];
+
+// Function to escape special characters for MarkdownV2
+function escapeMarkdownV2(text) {
   return text.replace(/([_*\[\]()~`>#+-=|{}.!])/g, '\\$1');
 }
 
@@ -55,7 +69,7 @@ bot.on('message', (msg) => {
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
-      reaction: doEmoji  // Directly pass the emoji as reaction
+      reaction: doEmoji  // Send the emoji directly as a string
     })
     .then(response => {
       console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
@@ -111,7 +125,7 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
         axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
           chat_id: clonedChatId,
           message_id: clonedMessageId,
-          reaction: clonedEmoji  // Use cloned bot's token for reaction
+          reaction: clonedEmoji  // Send the emoji directly as a string for cloned bot
         })
         .then(response => {
           console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
