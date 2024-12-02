@@ -23,7 +23,7 @@ const BotToken = mongoose.model('BotToken', botTokenSchema);
 // Main bot instance
 const bot = new TelegramBot(mainBotToken, { polling: true });
 
-// List of unique emojis for reactions
+// List of unique emojis for reactions (make sure these emojis are valid according to Telegram's API)
 const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🌈", "💌", "🙌", "🌍"];
 
 // Function to escape special characters for MarkdownV2
@@ -57,17 +57,15 @@ To join, click the button below:
   });
 });
 
-// Polling error handler for main bot
+// Polling error handler
 bot.on('polling_error', (error) => {
-  console.error('Main bot polling error:', error); // Log polling errors
+  console.error('Polling error:', error); // Log polling errors
 });
 
 // Listen for new messages and send a random emoji as a reaction (Main bot)
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageId = msg.message_id;
-
-  console.log(`Received message: ${msg.text}, chatId: ${chatId}, messageId: ${messageId}`);
 
   // Ensure we only react to group or private messages (ignoring any non-message events)
   if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
@@ -81,7 +79,7 @@ bot.on('message', (msg) => {
       reaction: doEmoji  // Ensure reaction is only the emoji (not a wrapped object)
     })
     .then(response => {
-      console.log(`Main bot reacted with ${doEmoji} to message: ${msg.text}`);
+      console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
     })
     .catch(error => {
       console.error(`Error reacting with emoji: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
@@ -89,73 +87,7 @@ bot.on('message', (msg) => {
   }
 });
 
-// Function to start all cloned bots automatically
-async function startClonedBots() {
-  try {
-    // Fetch all stored bot tokens from MongoDB
-    const storedBots = await BotToken.find();
-
-    // Start each cloned bot
-    storedBots.forEach(botData => {
-      const clonedBot = new TelegramBot(botData.token, { polling: true });
-
-      // Command: /start for the cloned bot
-      clonedBot.onText(/\/start/, (msg) => {
-        const chatId = msg.chat.id;
-        const text = `Hi, I am a cloned bot of *${botData.botName}*! \n\nI will react to your messages with random emojis.`;
-
-        const escapedText = escapeMarkdownV2(text); // Escape special characters
-
-        clonedBot.sendMessage(chatId, escapedText, {
-          parse_mode: 'MarkdownV2'
-        }).catch((error) => {
-          console.error("Error sending /start message for cloned bot:", error.message);
-        });
-      });
-
-      // Add reaction logic for the cloned bot
-      clonedBot.on('message', (msg) => {
-        const clonedChatId = msg.chat.id;
-        const clonedMessageId = msg.message_id;
-
-        console.log(`Cloned bot received message: ${msg.text}, chatId: ${clonedChatId}, messageId: ${clonedMessageId}`);
-
-        // Skip if message is a command or non-reaction message
-        if (msg.text && msg.text.startsWith('/')) return;
-
-        // Select a random emoji from the list
-        const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
-
-        // Send emoji as a reaction using setMessageReaction API for cloned bot
-        axios.post(`https://api.telegram.org/bot${botData.token}/setMessageReaction`, {
-          chat_id: clonedChatId,
-          message_id: clonedMessageId,
-          reaction: clonedEmoji  // Use only the emoji here, not the object
-        })
-        .then(response => {
-          console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
-        })
-        .catch(error => {
-          console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
-        });
-      });
-
-      // Polling error handler for cloned bots
-      clonedBot.on('polling_error', (error) => {
-        console.error(`Cloned bot polling error for "${botData.botName}":`, error);
-      });
-
-      console.log(`Cloned bot "${botData.botName}" is running...`);
-    });
-  } catch (error) {
-    console.error("Error starting cloned bots:", error.message);
-  }
-}
-
-// Start all cloned bots when the main bot starts
-startClonedBots();
-
-// Command: /clone <bot_token> to clone a bot
+// Command: /clone <bot_token> (For Cloning Bots)
 bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const token = match[1].trim();
@@ -202,8 +134,6 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
           const clonedChatId = msg.chat.id;
           const clonedMessageId = msg.message_id;
 
-          console.log(`Cloned bot received message: ${msg.text}, chatId: ${clonedChatId}, messageId: ${clonedMessageId}`);
-
           // Skip if message is a command or non-reaction message
           if (msg.text && msg.text.startsWith('/')) return;
 
@@ -220,18 +150,26 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
             console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
           })
           .catch(error => {
-            console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
+            // Log the full error response to understand the issue better
+            if (error.response) {
+              console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response.data)}`);
+            } else {
+              console.error(`Error reacting with emoji in cloned bot: ${error.message}`);
+            }
           });
         });
 
         console.log(`Cloned bot "${botInfo.first_name}" is running...`);
+      } else {
+        console.log('No token found for the cloned bot.');
       }
-
     } else {
-      bot.sendMessage(chatId, `❌ Invalid bot token provided.`);
+      bot.sendMessage(chatId, '❌ Invalid token. Please try again.');
     }
   } catch (error) {
-    bot.sendMessage(chatId, `❌ Error: ${error.message}`);
+    bot.sendMessage(chatId, '❌ Invalid token or an error occurred. Please try again.');
+    console.error("Error in /clone command:", error.message);
   }
 });
 
+console.log('Main bot is running...');
