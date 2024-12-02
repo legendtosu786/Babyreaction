@@ -191,16 +191,16 @@ bot.onText(/\/cloned/, async (msg) => {
     for (let i = 0; i < storedBots.length; i += chunkSize) {
       const chunk = storedBots.slice(i, i + chunkSize);
 
-      // Properly escape each bot name and token
+      // Prepare the list of bots in HTML format
       const botList = chunk.map((bot, index) => {
-        const escapedBotName = escapeMarkdownV2(bot.botName);
-        const escapedToken = escapeMarkdownV2(bot.token);
-        
-        return `${i + index + 1}. *Bot Name*: ${escapedBotName}\n   *Token*: \`${escapedToken}\``; 
-      }).join('\n\n');
+        const botName = bot.botName;
+        const token = bot.token;
 
-      const message = `*List of Cloned Bots:*\n\n${botList}`;
-      await bot.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' })
+        return `<b>${i + index + 1}. Bot Name:</b> ${botName}<br><b>Token:</b> <code>${token}</code>`; 
+      }).join('<br><br>');
+
+      const message = `<b>List of Cloned Bots:</b><br><br>${botList}`;
+      await bot.sendMessage(chatId, message, { parse_mode: 'HTML' })
         .catch(error => console.error("Error sending /cloned response:", error.message));
     }
   } catch (error) {
@@ -208,6 +208,7 @@ bot.onText(/\/cloned/, async (msg) => {
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
+
 
 
 
