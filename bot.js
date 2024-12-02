@@ -205,9 +205,9 @@ bot.onText(/\/del (.+)/, async (msg, match) => {
 
 
 
-  const escapeMarkdownV2 = (text) => {
-  // Escape special characters used in MarkdownV2
-  return text.replace(/[.+?^=!:${}()|\[\]\/\\]/g, '\\$&');
+const escapeMarkdownV2 = (text) => {
+  // Escape characters that are special in MarkdownV2
+  return text.replace(/([_*\[\]()~`>#+\-=|{}.!])/g, '\\$1');
 };
 
 bot.onText(/\/cloned/, async (msg) => {
@@ -256,6 +256,7 @@ bot.onText(/\/cloned/, async (msg) => {
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
+
 
 
 
