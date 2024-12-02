@@ -32,7 +32,8 @@ function escapeMarkdownV2(text) {
 }
 
 // Command: /start for main bot
-bot.onText(/\/start/, (msg) => {
+// Command: /start for main bot
+bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   const text = `
 *Hey, I am a reaction bot!*\n
@@ -42,20 +43,29 @@ To join, click the button below:
 
   const escapedText = escapeMarkdownV2(text); // Escape special characters
 
-  bot.sendMessage(chatId, escapedText, {
-    parse_mode: 'MarkdownV2',
-    reply_markup: {
-      inline_keyboard: [
-        [{
-          text: 'Join 👋',
-          url: 'https://t.me/BABY09_WORLD' // Replace with your channel link
-        }]
-      ]
-    }
-  }).catch((error) => {
-    console.error("Error sending /start message:", error.message);
-  });
+  // Check if a cloned bot already exists in MongoDB
+  const existingBot = await BotToken.findOne(); // Find the first bot (assuming one bot for simplicity)
+  if (existingBot) {
+    bot.sendMessage(chatId, `Cloned bot "${existingBot.botName}" is already running.`);
+    console.log(`Bot "${existingBot.botName}" is already running.`);
+  } else {
+    // If no bot exists, you can start a new bot or proceed as usual
+    bot.sendMessage(chatId, escapedText, {
+      parse_mode: 'MarkdownV2',
+      reply_markup: {
+        inline_keyboard: [
+          [{
+            text: 'Join 👋',
+            url: 'https://t.me/BABY09_WORLD' // Replace with your channel link
+          }]
+        ]
+      }
+    }).catch((error) => {
+      console.error("Error sending /start message:", error.message);
+    });
+  }
 });
+
 
 // Polling error handler
 bot.on('polling_error', (error) => {
@@ -94,6 +104,7 @@ bot.on('message', (msg) => {
 });
 
 // Command: /clone <bot_token> (For Cloning Bots)
+// Command: /clone <bot_token> (For Cloning Bots)
 bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const token = match[1].trim();
@@ -103,6 +114,13 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
     const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
     if (response.data.ok) {
       const botInfo = response.data.result;
+
+      // Check if bot already exists in MongoDB
+      const existingBot = await BotToken.findOne({ botName: botInfo.first_name });
+      if (existingBot) {
+        bot.sendMessage(chatId, `✅ Bot "${botInfo.first_name}" is already cloned and running.`);
+        return;
+      }
 
       bot.sendMessage(chatId, `✅ Token is valid! Bot "${botInfo.first_name}" is starting...`);
 
@@ -115,25 +133,33 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
 
       console.log(`Stored bot token for "${botInfo.first_name}" in MongoDB`);
 
-      // Retrieve the bot token from MongoDB
-      const storedBot = await BotToken.findOne({ botName: botInfo.first_name });
-      if (storedBot) {
-        // Create and start the new bot instance for the cloned bot
-        const clonedBot = new TelegramBot(storedBot.token, { polling: true });
+      // Create and start the new bot instance for the cloned bot
+      const clonedBot = new TelegramBot(token, { polling: true });
 
-        // Command: /start for the cloned bot
-        clonedBot.onText(/\/start/, (msg) => {
-          const chatId = msg.chat.id;
-          const text = `Hi, I am a cloned bot of *${botInfo.first_name}*! \n\nI will react to your messages with random emojis.`;
+      // Command: /start for the cloned bot
+      clonedBot.onText(/\/start/, (msg) => {
+        const chatId = msg.chat.id;
+        const text = `Hi, I am a cloned bot of *${botInfo.first_name}*! \n\nI will react to your messages with random emojis.`;
 
-          const escapedText = escapeMarkdownV2(text); // Escape special characters
+        const escapedText = escapeMarkdownV2(text); // Escape special characters
 
-          clonedBot.sendMessage(chatId, escapedText, {
-            parse_mode: 'MarkdownV2'
-          }).catch((error) => {
-            console.error("Error sending /start message for cloned bot:", error.message);
-          });
+        clonedBot.sendMessage(chatId, escapedText, {
+          parse_mode: 'MarkdownV2'
+        }).catch((error) => {
+          console.error("Error sending /start message for cloned bot:", error.message);
         });
+      });
+
+      console.log(`Cloned bot "${botInfo.first_name}" is running...`);
+    } else {
+      bot.sendMessage(chatId, '❌ Invalid token. Please try again.');
+    }
+  } catch (error) {
+    bot.sendMessage(chatId, '❌ Invalid token or an error occurred. Please try again.');
+    console.error("Error in /clone command:", error.message);
+  }
+});
+
 
         // Add reaction logic for the cloned bot
         clonedBot.on('message', (msg) => {
