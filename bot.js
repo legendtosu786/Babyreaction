@@ -285,7 +285,7 @@ bot.onText(/\/clone(.*)/, async (msg, match) => {
   if (!token) {
     bot.sendMessage(
       chatId,
-      '❌ Uses:\n/clone {bot_token}\n\nPlease provide a valid bot token to clone.'
+      '❌ Usᴇs ᴡʀᴏɴɢ:\n/clone {bot_token}\n\nPʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ʙᴏᴛ ᴛᴏᴋᴇɴ ᴛᴏ clᴏɴᴇ.'
     );
     return;
   }
@@ -331,7 +331,7 @@ bot.onText(/\/mybot/, async (msg) => {
     const userBots = await BotToken.find({ userId: msg.from.id });
 
     if (userBots.length === 0) {
-      bot.sendMessage(chatId, '❌ You do not have any cloned bots.');
+      bot.sendMessage(chatId, '❌ Yᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴀɴʏ clᴏɴᴇᴅ ʙᴏᴛs.');
       return;
     }
 
@@ -346,10 +346,10 @@ bot.onText(/\/mybot/, async (msg) => {
       const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
       const botUsername = response.data.result.username;  // This is the bot's Telegram username
 
-      return `<b>${index + 1}. Bot Name:</b> ${botName}\n<b>Username:</b> @${botUsername}\n<b>Cost:</b> Free`; // Adding Cost info
+      return `<b>${index + 1}. Bᴏᴛ Nᴀᴍᴇ:</b> ${botName}\n<b>Usᴇʀɴᴀᴍᴇ:</b> @${botUsername}\n<b>Cᴏsᴛ:</b> Fʀᴇᴇ 🤑`; // Adding Cost info
     }));
 
-    const message = `<b>Your Cloned Bots:</b>\n\n${botList.join('\n\n')}`;
+    const message = `<b>Yᴏᴜʀ Clᴏɴᴇᴅ Bᴏᴛs:</b>\n\n${botList.join('\n\n')}`;
     bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
 
   } catch (error) {
