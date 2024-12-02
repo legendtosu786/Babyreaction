@@ -81,13 +81,18 @@ bot.on('message', (msg) => {
 });
 
 // Function to start cloned bots
+// Function to start cloned bots
 async function startClonedBots() {
   try {
-    const storedBots = await BotToken.find();
+    // Fetch unique bot tokens from MongoDB
+    const storedBots = await BotToken.aggregate([
+      { $group: { _id: "$token", botName: { $first: "$botName" } } }
+    ]);
 
     storedBots.forEach(botData => {
-      const clonedBot = new TelegramBot(botData.token, { polling: true });
+      const clonedBot = new TelegramBot(botData._id, { polling: true });
 
+      // Command: /start for the cloned bot
       clonedBot.onText(/\/start/, (msg) => {
         const chatId = msg.chat.id;
         const text = `Hi, I am a cloned bot of *${botData.botName}*! \n\nI will react to your messages with random emojis.`;
@@ -98,12 +103,14 @@ async function startClonedBots() {
           .catch(error => console.error("Error sending /start message for cloned bot:", error.message));
       });
 
+      // Add reaction logic for the cloned bot
       clonedBot.on('message', (msg) => {
         const randomEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
         clonedBot.sendMessage(msg.chat.id, randomEmoji, { reply_to_message_id: msg.message_id })
           .catch(error => console.error("Error reacting in cloned bot:", error.message));
       });
 
+      // Polling error handler for cloned bots
       clonedBot.on('polling_error', (error) => {
         console.error(`Cloned bot polling error for "${botData.botName}":`, error);
       });
