@@ -74,24 +74,23 @@ bot.on('message', (msg) => {
 
     // Send the emoji as a reaction using HTTP POST request
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
-      chat_id: chatId,
-      message_id: messageId,
-      reaction: JSON.stringify([
-        {
-          type: "emoji",
-          emoji: doEmoji,
-          is_big: true // Optional: To make the reaction big (true/false)
-        }
-      ])
-    })
-    .then(response => {
-      console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
-    })
-    .catch(error => {
-      console.error(`Error reacting with emoji: ${error}`);
-    });
-  }
+  chat_id: chatId,
+  message_id: messageId,
+  reaction: JSON.stringify([
+    {
+      type: "emoji",
+      emoji: doEmoji,
+      is_big: true
+    }
+  ])
+})
+.then(response => {
+  console.log('Reacted with emoji:', response.data); // Detailed response log
+})
+.catch(error => {
+  console.error('Error reacting with emoji:', error.response ? error.response.data : error.message);
 });
+
 
 // Command: /clone <bot_token> (For Cloning Bots)
 bot.onText(/\/clone (.+)/, async (msg, match) => {
