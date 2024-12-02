@@ -1,11 +1,11 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
-// Your bot's token (replace it with your actual token)
-const token = '7463542222:AAF14OHfN8mh5rstHUI5L6IZRITjHahBJYQ';
+// Main bot token
+const mainBotToken = '7638229482:AAEHEk2UNOjAyqA3fxKsf9ZliGSI8941gG4';
 
-// Create a new bot instance
-const bot = new TelegramBot(token, { polling: true });
+// Main bot instance
+const bot = new TelegramBot(mainBotToken, { polling: true });
 
 // List of emojis to react with
 const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🔥", "🌈", "💥", "💌", "🙌", "💥", "🌍"];
@@ -15,58 +15,51 @@ bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const text = `
   *Hey, I am a reaction bot!*\n
-  ~Add me to your group/channel to get emoji reactions!~\n
-  To join, click the button below ðŸ‘‡
+  Use /clone <bot_token> to clone me with your bot token!
   `;
 
-  // Send a message with Markdown styling and an inline button with the link
   bot.sendMessage(chatId, text, {
-    parse_mode: 'Markdown', // Enable Markdown formatting
-    reply_markup: {
-      inline_keyboard: [
-        [{
-          text: 'Join ðŸ‘‹',
-          url: 'https://t.me/BABY09_WORLD' // Replace with your channel link
-        }]
-      ]
-    }
+    parse_mode: 'Markdown',
   });
 });
 
-// Handle polling errors
-bot.on('polling_error', (error) => {
-  console.error('Polling error:', error); // Log the polling error
-});
-
-// Listen for new messages and send a random emoji as a reaction
-bot.on('message', (msg) => {
+// Clone bot logic
+bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
-  const messageId = msg.message_id;
+  const token = match[1];
 
-  // Ensure we only react to group or private messages (ignoring any non-message events)
-  if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
-    // Select a random emoji from the list
-    const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
+  // Validate the token using /getMe
+  try {
+    const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
+    if (response.data.ok) {
+      const botInfo = response.data.result;
 
-    // Send the emoji as a reaction using HTTP POST request
-    axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
-      chat_id: chatId,
-      message_id: messageId,
-      reaction: JSON.stringify([
-        {
-          type: "emoji",
-          emoji: doEmoji,
-          is_big: true // Optional: To make the reaction big (true/false)
+      bot.sendMessage(chatId, `✅ Token is valid! Bot "${botInfo.first_name}" is starting...`);
+
+      // Create and start the new bot
+      const clonedBot = new TelegramBot(token, { polling: true });
+
+      clonedBot.on('message', (msg) => {
+        const chatId = msg.chat.id;
+        const messageId = msg.message_id;
+
+        if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup') {
+          const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
+
+          clonedBot.sendMessage(chatId, doEmoji, {
+            reply_to_message_id: messageId,
+          });
         }
-      ])
-    })
-    .then(response => {
-      console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
-    })
-    .catch(error => {
-      console.error(`Error reacting with emoji: ${error}`);
-    });
+      });
+
+      console.log(`Cloned bot "${botInfo.first_name}" is running...`);
+    } else {
+      bot.sendMessage(chatId, '❌ Invalid token. Please try again.');
+    }
+  } catch (error) {
+    bot.sendMessage(chatId, '❌ Invalid token or an error occurred. Please try again.');
+    console.error(error);
   }
 });
 
-console.log('Bot is running...');
+console.log('Main bot is running...');
