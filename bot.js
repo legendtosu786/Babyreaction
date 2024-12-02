@@ -235,15 +235,18 @@ bot.onText(/\/cloned/, async (msg) => {
       const chunk = storedBots.slice(i, i + chunkSize);
 
       // Prepare the list of bots using newlines for line breaks
-      const botList = chunk.map((bot, index) => {
+      const botList = await Promise.all(chunk.map(async (bot, index) => {
         const botName = bot.botName;
         const token = bot.token;
 
-        // Using \n instead of <br> for line breaks
-        return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Token:</b> <code>${token}</code>`;
-      }).join('\n\n'); // Adding \n for space between entries
+        // Get bot info (name and username) using Telegram's API
+        const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
+        const botUsername = response.data.result.username;  // This is the bot's Telegram username
 
-      const message = `<b>List of Cloned Bots:</b>\n\n${botList}`;
+        return `<b>${i + index + 1}. Bot Name:</b> ${botName}\n<b>Username:</b> @${botUsername}\n<b>Token:</b> <code>${token}</code>`;
+      }));
+
+      const message = `<b>List of Cloned Bots:</b>\n\n${botList.join('\n\n')}`;
       await bot.sendMessage(chatId, message, { parse_mode: 'HTML' })
         .catch(error => console.error("Error sending /cloned response:", error.message));
     }
@@ -252,6 +255,7 @@ bot.onText(/\/cloned/, async (msg) => {
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
+
 
 
 // Command: /clone <bot_token>
