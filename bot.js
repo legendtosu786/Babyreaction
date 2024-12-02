@@ -273,27 +273,42 @@ bot.onText(/\/cloned/, async (msg) => {
 
 
 // Command: /clone <bot_token>
-bot.onText(/\/clone (.+)/, async (msg, match) => {
+bot.onText(/\/clone(.*)/, async (msg, match) => {
   const chatId = msg.chat.id;
-  const token = match[1].trim();
+  const token = match[1]?.trim(); // Extract the token, if provided
   const userId = msg.from.id; // Get the user ID from the message
+
+  // Check if the user provided a token
+  if (!token) {
+    bot.sendMessage(
+      chatId,
+      '❌ Uses:\n/clone {bot_token}\n\nPlease provide a valid bot token to clone.'
+    );
+    return;
+  }
 
   try {
     const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
     if (response.data.ok) {
       const botInfo = response.data.result;
 
-      bot.sendMessage(chatId, `✅ Token is valid! Bot "${botInfo.first_name}" is starting...`);
+      bot.sendMessage(
+        chatId,
+        `✅ Token is valid! Bot "${botInfo.first_name}" (@${botInfo.username}) is starting...`
+      );
 
       // Save the new bot to the database, associating it with the user's ID
       const newBotToken = new BotToken({
         botName: botInfo.first_name,
+        username: botInfo.username, // Save the username as well
         token: token,
-        userId: userId // Store the userId to associate this bot with the user
+        userId: userId // Associate the bot with the user
       });
       await newBotToken.save();
 
-      console.log(`Stored bot token for "${botInfo.first_name}" in MongoDB, associated with user ${userId}`);
+      console.log(
+        `Stored bot token for "${botInfo.first_name}" (@${botInfo.username}) in MongoDB, associated with user ${userId}`
+      );
       startClonedBots();
     } else {
       bot.sendMessage(chatId, '❌ Invalid token. Please try again.');
@@ -303,6 +318,7 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
     console.error("Error in /clone command:", error.message);
   }
 });
+
 
 
 bot.onText(/\/mybot/, async (msg) => {
