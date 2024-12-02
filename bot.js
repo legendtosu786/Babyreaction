@@ -317,7 +317,6 @@ bot.onText(/\/clone(.*)/, async (msg, match) => {
       bot.sendMessage(chatId, '❌ Iɴᴠᴀʟɪᴅ ᴛᴏᴋᴇɴ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ.');
     }
   } catch (error) {
-    bot.sendMessage(chatId, '❌ Iɴᴠᴀʟɪᴅ ᴛᴏᴋᴇɴ ᴏʀ ᴀɴ ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ. Pʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ.');
     console.error("Error in /clone command:", error.message);
   }
 });
