@@ -4,7 +4,7 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 
 // Main bot token
-const mainBotToken = '7669417716:AAHl_RHJ7BU-dss23HbOUVh6wrTz88_9rRs';
+const mainBotToken = '7638229482:AAH3yESITCj76RYkIx9eQGpd2kqtAA1M6lE';
 // Define the owner ID (replace with your Telegram user ID)
 const ownerId = 7400383704; // Replace with your Telegram ID
 // MongoDB connection
@@ -23,9 +23,6 @@ const botTokenSchema = new mongoose.Schema({
 
 
 const BotToken = mongoose.model('BotToken', botTokenSchema);
-
-// Main bot instance
-const bot = new TelegramBot(mainBotToken, { polling: true });
 
 // List of unique emojis for reactions
 const myEmoji = ["👍", "❤", "🔥", "🥰", "👏", "😁", "🤔", "🤯", "😱", "🎉", "🤩", , "🙏", "👌",  "😍", "❤‍🔥", "🌚", "💯", "🤣", "💔", "🇮🇳", "😈", "😭", "🤓",  "😇", "🤝", "🤗", "🫡", "🤪", "🗿", "🆒", "💘", "😘", "😎"];
