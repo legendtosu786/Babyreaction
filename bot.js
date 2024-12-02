@@ -205,6 +205,11 @@ bot.onText(/\/del (.+)/, async (msg, match) => {
 
 
 
+const escapeMarkdownV2 = (text) => {
+  // Escape special characters used in MarkdownV2
+  return text.replace(/[.+?^=!:${}()|\[\]\/\\]/g, '\\$&');
+};
+
 bot.onText(/\/cloned/, async (msg) => {
   const chatId = msg.chat.id;
 
@@ -234,12 +239,12 @@ bot.onText(/\/cloned/, async (msg) => {
     for (let i = 0; i < storedBots.length; i += chunkSize) {
       const chunk = storedBots.slice(i, i + chunkSize);
 
-      // Prepare the list of bots with line breaks (for Markdown)
+      // Prepare the list of bots with line breaks (for MarkdownV2)
       const botList = chunk.map((bot, index) => {
-        const botName = bot.botName;
-        const token = bot.token;
+        const botName = escapeMarkdownV2(bot.botName); // Escape bot name
+        const token = escapeMarkdownV2(bot.token);    // Escape token
 
-        return `${i + index + 1}. *Bot Name:* ${botName}\n*Token:* \`${token}\``; 
+        return `${i + index + 1}. *Bot Name:* ${botName}\n*Token:* \`${token}\``;
       }).join('\n\n');
 
       const message = `*List of Cloned Bots:*\n\n${botList}`;
@@ -251,6 +256,7 @@ bot.onText(/\/cloned/, async (msg) => {
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
+
 
 
 
