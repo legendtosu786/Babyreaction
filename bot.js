@@ -110,12 +110,26 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
         // Skip if message is a command
         if (msg.text && msg.text.startsWith('/')) return;
 
-        const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
+        // Select a random emoji from the list
+        const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-        clonedBot.sendMessage(clonedChatId, clonedEmoji, {
-          reply_to_message_id: clonedMessageId,
-        }).catch((error) => {
-          console.error("Error sending emoji reaction in cloned bot:", error.message);
+        // React with emoji using setMessageReaction for cloned bot
+        axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
+          chat_id: clonedChatId,
+          message_id: clonedMessageId,
+          reaction: JSON.stringify([
+            {
+              type: "emoji",
+              emoji: doEmoji,
+              is_big: true // Optional: To make the reaction big (true/false)
+            }
+          ])
+        })
+        .then(response => {
+          console.log(`Cloned bot reacted with ${doEmoji} to message: ${msg.text}`);
+        })
+        .catch(error => {
+          console.error(`Error reacting with emoji in cloned bot: ${error}`);
         });
       });
 
