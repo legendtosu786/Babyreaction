@@ -15,7 +15,7 @@ mongoose.connect('mongodb+srv://Yash_607:Yash_607@cluster0.r3s9sbo.mongodb.net/?
 // MongoDB Schema for storing bot tokens
 const botTokenSchema = new mongoose.Schema({
   botName: String,
-  token: String
+  token: String,
 });
 
 const BotToken = mongoose.model('BotToken', botTokenSchema);
@@ -44,10 +44,10 @@ bot.onText(/\/start/, (msg) => {
       inline_keyboard: [
         [{
           text: 'Join 👋',
-          url: 'https://t.me/YOUR_CHANNEL_LINK' // Replace with your channel link
-        }]
-      ]
-    }
+          url: 'https://t.me/YOUR_CHANNEL_LINK', // Replace with your channel link
+        }],
+      ],
+    },
   }).catch((error) => {
     console.error("Error sending /start message:", error.message);
   });
@@ -55,7 +55,7 @@ bot.onText(/\/start/, (msg) => {
 
 // Polling error handler
 bot.on('polling_error', (error) => {
-  console.error('Main bot polling error:', error); // Log polling errors
+  console.error('Main bot polling error:', error);
 });
 
 // Listen for new messages and send a random emoji as a reaction (Main bot)
@@ -65,39 +65,33 @@ bot.on('message', (msg) => {
 
   console.log(`Received message: ${msg.text}, chatId: ${chatId}, messageId: ${messageId}`);
 
-  // Ensure we only react to group or private messages (ignoring any non-message events)
-  if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
-    // Select a random emoji from the list
+  if (['private', 'group', 'supergroup', 'channel'].includes(msg.chat.type)) {
     const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-    // Send the emoji as a reaction using HTTP POST request
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
-      reaction: doEmoji  // Ensure reaction is only the emoji (not a wrapped object)
+      reaction: doEmoji,
     })
-    .then(response => {
+    .then(() => {
       console.log(`Main bot reacted with ${doEmoji} to message: ${msg.text}`);
     })
-    .catch(error => {
-      console.error(`Error reacting with emoji: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
+    .catch((error) => {
+      console.error(`Error reacting with emoji: ${JSON.stringify(error.response?.data || error.message)}`);
     });
   }
 });
 
 // Function to start cloned bots
-// Function to start cloned bots
 async function startClonedBots() {
   try {
-    // Fetch unique bot tokens from MongoDB
     const storedBots = await BotToken.aggregate([
-      { $group: { _id: "$token", botName: { $first: "$botName" } } }
+      { $group: { _id: "$token", botName: { $first: "$botName" } } },
     ]);
 
-    storedBots.forEach(botData => {
+    storedBots.forEach((botData) => {
       const clonedBot = new TelegramBot(botData._id, { polling: true });
 
-      // Command: /start for the cloned bot
       clonedBot.onText(/\/start/, (msg) => {
         const chatId = msg.chat.id;
         const text = `Hi, I am a cloned bot of *${botData.botName}*! \n\nI will react to your messages with random emojis.`;
@@ -105,51 +99,41 @@ async function startClonedBots() {
         const escapedText = escapeMarkdownV2(text);
 
         clonedBot.sendMessage(chatId, escapedText, { parse_mode: 'MarkdownV2' })
-          .catch(error => console.error("Error sending /start message for cloned bot:", error.message));
+          .catch((error) => console.error("Error sending /start message for cloned bot:", error.message));
       });
 
-      // Add reaction logic for the cloned bot
       clonedBot.on('message', (msg) => {
-          const clonedChatId = msg.chat.id;
-          const clonedMessageId = msg.message_id;
+        const clonedChatId = msg.chat.id;
+        const clonedMessageId = msg.message_id;
 
-          console.log(`Cloned bot received message: ${msg.text}, chatId: ${clonedChatId}, messageId: ${clonedMessageId}`);
+        console.log(`Cloned bot received message: ${msg.text}, chatId: ${clonedChatId}, messageId: ${clonedMessageId}`);
 
-          // Skip if message is a command or non-reaction message
-          if (msg.text && msg.text.startsWith('/')) return;
+        if (msg.text && msg.text.startsWith('/')) return;
 
-          // Select a random emoji from the list
-          const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
+        const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-          // Send emoji as a reaction using setMessageReaction API for cloned bot
-          axios.post(`https://api.telegram.org/bot${storedBot.token}/setMessageReaction`, {
-            chat_id: clonedChatId,
-            message_id: clonedMessageId,
-            reaction: clonedEmoji  // Use only the emoji here, not the object
-          })
-          .then(response => {
-            console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
-          })
-          .catch(error => {
-            console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
-          });
+        axios.post(`https://api.telegram.org/bot${botData._id}/setMessageReaction`, {
+          chat_id: clonedChatId,
+          message_id: clonedMessageId,
+          reaction: clonedEmoji,
+        })
+        .then(() => {
+          console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
+        })
+        .catch((error) => {
+          console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response?.data || error.message)}`);
         });
+      });
 
-        console.log(`Cloned bot "${botInfo.first_name}" is running...`);
-      }
-
-    } else {
-      bot.sendMessage(chatId, `❌ Invalid bot token provided.`);
-    }
+      console.log(`Cloned bot "${botData.botName}" is running...`);
+    });
   } catch (error) {
-    bot.sendMessage(chatId, `❌ Error: ${error.message}`);
+    console.error('Error starting cloned bots:', error.message);
   }
-});
+}
 
-// Start all cloned bots
 startClonedBots();
 
-// Command: /clone <bot_token>
 bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const token = match[1].trim();
@@ -163,7 +147,7 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
 
       const newBotToken = new BotToken({
         botName: botInfo.first_name,
-        token: token
+        token,
       });
       await newBotToken.save();
 
