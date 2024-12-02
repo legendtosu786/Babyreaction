@@ -301,14 +301,19 @@ bot.onText(/\/mybot/, async (msg) => {
 
     console.log(`Found ${userBots.length} cloned bots for user: ${msg.from.id}`);
 
-    // Prepare the list of bots to send to the user with only the name and username
-    const botList = userBots.map((bot, index) => {
+    // Prepare the list of bots to send to the user with bot's name and username
+    const botList = await Promise.all(userBots.map(async (bot, index) => {
       const botName = bot.botName;
-      const botUsername = botName.toLowerCase().replace(/ /g, '_'); // Creating username from bot name
-      return `<b>${index + 1}. Bot Name:</b> ${botName}\n<b>Username:</b> @${botUsername}\n<b>Cost:</b> Free`; // Adding Cost info
-    }).join('\n\n');
+      const token = bot.token;
 
-    const message = `<b>Your Cloned Bots:</b>\n\n${botList}`;
+      // Get bot info (name and username) using Telegram's API
+      const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
+      const botUsername = response.data.result.username;  // This is the bot's Telegram username
+
+      return `<b>${index + 1}. Bot Name:</b> ${botName}\n<b>Username:</b> @${botUsername}\n<b>Cost:</b> Free`; // Adding Cost info
+    }));
+
+    const message = `<b>Your Cloned Bots:</b>\n\n${botList.join('\n\n')}`;
     bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
 
   } catch (error) {
@@ -316,6 +321,7 @@ bot.onText(/\/mybot/, async (msg) => {
     bot.sendMessage(chatId, '❌ An error occurred while fetching your cloned bots. Please try again later.');
   }
 });
+
 
 
 // Periodic cleanup of duplicate tokens in the database
