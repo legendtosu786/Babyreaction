@@ -37,7 +37,9 @@ function escapeMarkdownV2(text) {
 // Command: /start for main bot
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  const text = `**Hᴇʏ, ɪ ᴀᴍ ᴀ ᴀᴜᴛᴏ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ!**\n\nAᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴ!\nTᴏ ᴊᴏɪɴ, ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ:\n\n` +
+  const text = `*Hᴇʏ, ɪ ᴀᴍ ᴀ ᴀᴜᴛᴏ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ!* \n\n` +
+    `Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴ!\n` +
+    `Tᴏ ᴊᴏɪɴ, ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ:\n\n` +
     `*Useful Commands:*\n` +
     `/start - Description of the bot and how it works\n` +
     `/mybot - List of your cloned bots\n` +
@@ -48,10 +50,12 @@ bot.onText(/\/start/, (msg) => {
     `*Note: This bot is cost-free to use!*\n\n` +
     `To join, click the button below:`;
 
-  const escapedText = escapeMarkdownV2(text);
+  // Escape special characters for MarkdownV2
+  const escapedText = text
+    .replace(/([_*[\]()~`>#+=\|-])/g, '\\$1'); // Escape special characters for MarkdownV2
 
   bot.sendMessage(chatId, escapedText, {
-    parse_mode: 'MarkdownV2',
+    parse_mode: 'MarkdownV2', // Use MarkdownV2 for proper formatting
     reply_markup: {
       inline_keyboard: [
         [{
@@ -64,6 +68,7 @@ bot.onText(/\/start/, (msg) => {
     console.error("Error sending /start message:", error.message);
   });
 });
+
 
 // Polling error handler
 bot.on('polling_error', (error) => {
