@@ -23,7 +23,7 @@ const BotToken = mongoose.model('BotToken', botTokenSchema);
 // Main bot instance
 const bot = new TelegramBot(mainBotToken, { polling: true });
 
-// List of unique emojis for reactions (make sure these emojis are valid according to Telegram's API)
+// List of unique emojis for reactions
 const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🌈", "💌", "🙌", "🌍"];
 
 // Function to escape special characters for MarkdownV2
@@ -57,9 +57,9 @@ To join, click the button below:
   });
 });
 
-// Polling error handler
+// Polling error handler for main bot
 bot.on('polling_error', (error) => {
-  console.error('Polling error:', error); // Log polling errors
+  console.error('Main bot polling error:', error); // Log polling errors
 });
 
 // Listen for new messages and send a random emoji as a reaction (Main bot)
@@ -79,7 +79,7 @@ bot.on('message', (msg) => {
       reaction: doEmoji  // Ensure reaction is only the emoji (not a wrapped object)
     })
     .then(response => {
-      console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
+      console.log(`Main bot reacted with ${doEmoji} to message: ${msg.text}`);
     })
     .catch(error => {
       console.error(`Error reacting with emoji: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
@@ -132,13 +132,13 @@ async function startClonedBots() {
           console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
         })
         .catch(error => {
-          // Log the full error response to understand the issue better
-          if (error.response) {
-            console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response.data)}`);
-          } else {
-            console.error(`Error reacting with emoji in cloned bot: ${error.message}`);
-          }
+          console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
         });
+      });
+
+      // Polling error handler for cloned bots
+      clonedBot.on('polling_error', (error) => {
+        console.error(`Cloned bot polling error for "${botData.botName}":`, error);
       });
 
       console.log(`Cloned bot "${botData.botName}" is running...`);
@@ -220,43 +220,39 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
 
         console.log(`Cloned bot "${botInfo.first_name}" is running...`);
       }
-
     } else {
-      bot.sendMessage(chatId, "❌ Invalid bot token!");
+      bot.sendMessage(chatId, `❌ Invalid bot token!`);
     }
   } catch (error) {
-    console.error("Error in /clone command:", error.message);
-    bot.sendMessage(chatId, "❌ Error cloning bot, please check the token and try again.");
+    console.error("Error cloning bot:", error.message);
+    bot.sendMessage(chatId, `❌ Error cloning bot: ${error.message}`);
   }
 });
 
-// Owner command: /cloned to list all cloned bots
+// Command: /cloned to list all cloned bots
 bot.onText(/\/cloned/, async (msg) => {
   const chatId = msg.chat.id;
 
-  // Check if the user is the owner (replace with actual owner ID)
-  const ownerId = 123456789; // Replace with the actual Telegram user ID of the owner
-  if (msg.from.id !== ownerId) {
-    return bot.sendMessage(chatId, "❌ You are not authorized to use this command.");
+  // Check if the user is the owner of the bot
+  if (msg.from.id !== 'YOUR_USER_ID') { // Replace 'YOUR_USER_ID' with the owner's Telegram user ID
+    return bot.sendMessage(chatId, "You are not authorized to view the cloned bots.");
   }
 
   try {
-    // Fetch all stored cloned bot names from MongoDB
-    const storedBots = await BotToken.find();
-    
-    if (storedBots.length === 0) {
-      return bot.sendMessage(chatId, "No cloned bots found.");
+    // Fetch all cloned bots from the database
+    const clonedBots = await BotToken.find();
+
+    if (clonedBots.length === 0) {
+      bot.sendMessage(chatId, "No cloned bots found.");
+    } else {
+      const botList = clonedBots.map(botData => `- ${botData.botName}`).join('\n');
+      bot.sendMessage(chatId, `*Cloned Bots:*\n\n${botList}`, {
+        parse_mode: 'MarkdownV2'
+      });
     }
-
-    let botList = "Here are the cloned bots:\n";
-    storedBots.forEach(bot => {
-      botList += `- ${bot.botName}\n`;  // Display bot names
-    });
-
-    bot.sendMessage(chatId, botList);
   } catch (error) {
     console.error("Error fetching cloned bots:", error.message);
-    bot.sendMessage(chatId, "❌ An error occurred while fetching cloned bots.");
+    bot.sendMessage(chatId, `❌ Error fetching cloned bots: ${error.message}`);
   }
 });
 
