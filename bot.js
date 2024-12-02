@@ -7,19 +7,19 @@ const mainBotToken = '7638229482:AAEHEk2UNOjAyqA3fxKsf9ZliGSI8941gG4';
 // Main bot instance
 const bot = new TelegramBot(mainBotToken, { polling: true });
 
-// List of emojis to react with
-const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🔥", "🌈", "💥", "💌", "🙌", "💥", "🌍"];
+// List of unique emojis for reactions
+const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🌈", "💌", "🙌", "🌍"];
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const text = `
-*Hey, I am a reaction bot!*\n
-Add me to your group/channel to get emoji reactions!\n
+*Hey, I am a reaction bot\!*\n
+Add me to your group/channel to get emoji reactions\!\n
 To join, click the button below:
   `;
 
   bot.sendMessage(chatId, text, {
-    parse_mode: 'MarkdownV2', // Use MarkdownV2 for safer parsing
+    parse_mode: 'MarkdownV2', // Ensure escaping for MarkdownV2
     reply_markup: {
       inline_keyboard: [
         [{
@@ -29,15 +29,14 @@ To join, click the button below:
       ]
     }
   }).catch((error) => {
-    console.error("Error sending /start message:", error);
+    console.error("Error sending /start message:", error.message);
   });
 });
-
 
 // Clone bot logic
 bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
-  const token = match[1];
+  const token = match[1].trim();
 
   // Validate the token using /getMe
   try {
@@ -55,10 +54,12 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
         const messageId = msg.message_id;
 
         if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup') {
-          const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
+          const randomEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-          clonedBot.sendMessage(chatId, doEmoji, {
+          clonedBot.sendMessage(chatId, randomEmoji, {
             reply_to_message_id: messageId,
+          }).catch((error) => {
+            console.error("Error sending emoji:", error.message);
           });
         }
       });
@@ -68,8 +69,8 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
       bot.sendMessage(chatId, '❌ Invalid token. Please try again.');
     }
   } catch (error) {
-    bot.sendMessage(chatId, '❌ Invalid token or an error occurred. Please try again.');
-    console.error(error);
+    bot.sendMessage(chatId, '❌ Invalid token or an error occurred. Please try again later.');
+    console.error("Error in /clone command:", error.message);
   }
 });
 
