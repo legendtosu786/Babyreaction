@@ -10,18 +10,29 @@ const bot = new TelegramBot(mainBotToken, { polling: true });
 // List of emojis to react with
 const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🔥", "🌈", "💥", "💌", "🙌", "💥", "🌍"];
 
-// Handle /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const text = `
-  *Hey, I am a reaction bot!*\n
-  Use /clone <bot_token> to clone me with your bot token!
+*Hey, I am a reaction bot!*\n
+Add me to your group/channel to get emoji reactions!\n
+To join, click the button below:
   `;
 
   bot.sendMessage(chatId, text, {
-    parse_mode: 'Markdown',
+    parse_mode: 'MarkdownV2', // Use MarkdownV2 for safer parsing
+    reply_markup: {
+      inline_keyboard: [
+        [{
+          text: 'Join 👋',
+          url: 'https://t.me/BABY09_WORLD' // Replace with your channel link
+        }]
+      ]
+    }
+  }).catch((error) => {
+    console.error("Error sending /start message:", error);
   });
 });
+
 
 // Clone bot logic
 bot.onText(/\/clone (.+)/, async (msg, match) => {
