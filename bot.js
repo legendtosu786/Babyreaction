@@ -5,7 +5,14 @@ const axios = require('axios');
 const mainBotToken = '7638229482:AAEHEk2UNOjAyqA3fxKsf9ZliGSI8941gG4';
 
 // Main bot instance
-const bot = new TelegramBot(mainBotToken, { polling: true });
+const bot = new TelegramBot(mainBotToken, {
+  polling: true,
+  request: {
+    rejectUnauthorized: true,
+  },
+});
+bot.stopPollingOnException = true;
+TelegramBot.Promise = global.Promise;
 
 // List of unique emojis for reactions
 const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🌈", "💌", "🙌", "🌍"];
@@ -13,13 +20,13 @@ const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const text = `
-*Hey, I am a reaction bot\!*\n
-Add me to your group/channel to get emoji reactions\!\n
+*Hey, I am a reaction bot\\!*\n
+Add me to your group/channel to get emoji reactions\\!\n
 To join, click the button below:
   `;
 
   bot.sendMessage(chatId, text, {
-    parse_mode: 'MarkdownV2', // Ensure escaping for MarkdownV2
+    parse_mode: 'MarkdownV2',
     reply_markup: {
       inline_keyboard: [
         [{
@@ -33,12 +40,10 @@ To join, click the button below:
   });
 });
 
-// Clone bot logic
 bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const token = match[1].trim();
 
-  // Validate the token using /getMe
   try {
     const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
     if (response.data.ok) {
@@ -46,7 +51,6 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
 
       bot.sendMessage(chatId, `✅ Token is valid! Bot "${botInfo.first_name}" is starting...`);
 
-      // Create and start the new bot
       const clonedBot = new TelegramBot(token, { polling: true });
 
       clonedBot.on('message', (msg) => {
