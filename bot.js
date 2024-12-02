@@ -67,6 +67,9 @@ bot.on('message', (msg) => {
 
   // Ensure we only react to group or private messages (ignoring any non-message events)
   if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
+    // Skip if the message is a command or non-reaction message
+    if (msg.text && msg.text.startsWith('/')) return;
+
     // Select a random emoji from the list
     const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
@@ -124,20 +127,20 @@ async function startClonedBots() {
         axios.post(`https://api.telegram.org/bot${botData._id}/setMessageReaction`, {
           chat_id: clonedChatId,
           message_id: clonedMessageId,
-          reaction: clonedEmoji  // Only the emoji string here
+          reaction: clonedEmoji  // Ensure only the emoji string is passed here
         })
-        .then(() => {
+        .then(response => {
           console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
         })
-        .catch((error) => {
-          console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response?.data || error.message)}`);
+        .catch(error => {
+          console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
         });
       });
 
       console.log(`Cloned bot "${botData.botName}" is running...`);
     });
   } catch (error) {
-    console.error('Error in starting cloned bots:', error.message);
+    console.error('Error starting cloned bots:', error.message);
   }
 }
 
