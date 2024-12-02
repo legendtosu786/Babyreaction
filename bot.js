@@ -1,4 +1,3 @@
-const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const mongoose = require('mongoose');
@@ -393,14 +392,4 @@ async function cleanupDuplicateTokens() {
 setInterval(cleanupDuplicateTokens, 600000); // Cleanup every 10 minutes
 
 
-const app = express();
-
-// Define a route to handle incoming requests
-app.get('/', (req, res) => {
-  res.send('Auto Reaction Bot is running!');
-});
-
-// Start Express server on port 8000
-app.listen(8000, () => {
-  console.log('Server is running on port 8000');
-});
+console.log('Bot is running...');
