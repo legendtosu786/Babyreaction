@@ -205,7 +205,7 @@ bot.onText(/\/del (.+)/, async (msg, match) => {
 
 
 
-const escapeMarkdownV2 = (text) => {
+  const escapeMarkdownV2 = (text) => {
   // Escape special characters used in MarkdownV2
   return text.replace(/[.+?^=!:${}()|\[\]\/\\]/g, '\\$&');
 };
