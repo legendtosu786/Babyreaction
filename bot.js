@@ -52,12 +52,22 @@ bot.on('message', (msg) => {
     const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
     // Send the emoji as a message in response to the original message
-    bot.sendMessage(chatId, doEmoji, {
-      reply_to_message_id: messageId,
-    }).then(() => {
+    axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
+      chat_id: chatId,
+      message_id: messageId,
+      reaction: JSON.stringify([
+        {
+          type: "emoji",
+          emoji: doEmoji,
+          is_big: true // Optional: To make the reaction big (true/false)
+        }
+      ])
+    })
+    .then(response => {
       console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
-    }).catch(error => {
-      console.error(`Error sending emoji reaction: ${error}`);
+    })
+    .catch(error => {
+      console.error(`Error reacting with emoji: ${error}`);
     });
   }
 });
