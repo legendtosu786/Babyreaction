@@ -275,7 +275,6 @@ bot.onText(/\/cloned/, async (msg) => {
 });
 
 
-
 // Command: /clone <bot_token>
 bot.onText(/\/clone(.*)/, async (msg, match) => {
   const chatId = msg.chat.id;
