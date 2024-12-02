@@ -67,6 +67,8 @@ bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageId = msg.message_id;
 
+  console.log(`Received message: ${msg.text}, chatId: ${chatId}, messageId: ${messageId}`);
+
   // Ensure we only react to group or private messages (ignoring any non-message events)
   if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
     // Select a random emoji from the list
@@ -115,6 +117,8 @@ async function startClonedBots() {
       clonedBot.on('message', (msg) => {
         const clonedChatId = msg.chat.id;
         const clonedMessageId = msg.message_id;
+
+        console.log(`Cloned bot received message: ${msg.text}, chatId: ${clonedChatId}, messageId: ${clonedMessageId}`);
 
         // Skip if message is a command or non-reaction message
         if (msg.text && msg.text.startsWith('/')) return;
@@ -198,6 +202,8 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
           const clonedChatId = msg.chat.id;
           const clonedMessageId = msg.message_id;
 
+          console.log(`Cloned bot received message: ${msg.text}, chatId: ${clonedChatId}, messageId: ${clonedMessageId}`);
+
           // Skip if message is a command or non-reaction message
           if (msg.text && msg.text.startsWith('/')) return;
 
@@ -220,40 +226,12 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
 
         console.log(`Cloned bot "${botInfo.first_name}" is running...`);
       }
+
     } else {
-      bot.sendMessage(chatId, `❌ Invalid bot token!`);
+      bot.sendMessage(chatId, `❌ Invalid bot token provided.`);
     }
   } catch (error) {
-    console.error("Error cloning bot:", error.message);
-    bot.sendMessage(chatId, `❌ Error cloning bot: ${error.message}`);
+    bot.sendMessage(chatId, `❌ Error: ${error.message}`);
   }
 });
 
-// Command: /cloned to list all cloned bots
-bot.onText(/\/cloned/, async (msg) => {
-  const chatId = msg.chat.id;
-
-  // Check if the user is the owner of the bot
-  if (msg.from.id !== '7400383704') { // Replace 'YOUR_USER_ID' with the owner's Telegram user ID
-    return bot.sendMessage(chatId, "You are not authorized to view the cloned bots.");
-  }
-
-  try {
-    // Fetch all cloned bots from the database
-    const clonedBots = await BotToken.find();
-
-    if (clonedBots.length === 0) {
-      bot.sendMessage(chatId, "No cloned bots found.");
-    } else {
-      const botList = clonedBots.map(botData => `- ${botData.botName}`).join('\n');
-      bot.sendMessage(chatId, `*Cloned Bots:*\n\n${botList}`, {
-        parse_mode: 'MarkdownV2'
-      });
-    }
-  } catch (error) {
-    console.error("Error fetching cloned bots:", error.message);
-    bot.sendMessage(chatId, `❌ Error fetching cloned bots: ${error.message}`);
-  }
-});
-
-console.log('Main bot is running...');
