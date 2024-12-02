@@ -185,20 +185,24 @@ bot.onText(/\/cloned/, async (msg) => {
     }
 
     console.log(`Found ${storedBots.length} cloned bots.`);
-    const botList = storedBots.map((bot, index) => 
-      `${index + 1}. *Bot Name*: ${escapeMarkdownV2(bot.botName)}\n   *Token*: \`${escapeMarkdownV2(bot.token)}\``).join('\n\n');
 
-    const message = `*List of Cloned Bots:*\n\n${botList}`;
+    // Send bots in chunks to avoid message size issues
+    const chunkSize = 10; // Number of bots per message
+    for (let i = 0; i < storedBots.length; i += chunkSize) {
+      const chunk = storedBots.slice(i, i + chunkSize);
+      const botList = chunk.map((bot, index) =>
+        `${i + index + 1}. *Bot Name*: ${escapeMarkdownV2(bot.botName)}\n   *Token*: \`${escapeMarkdownV2(bot.token)}\``).join('\n\n');
 
-    bot.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' })
-      .catch(error => {
-        console.error("Error sending /cloned response:", error.message);
-      });
+      const message = `*List of Cloned Bots:*\n\n${botList}`;
+      await bot.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' })
+        .catch(error => console.error("Error sending /cloned response:", error.message));
+    }
   } catch (error) {
     console.error("Error fetching cloned bots from database:", error.message);
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
+
 
 
 
