@@ -23,7 +23,7 @@ const BotToken = mongoose.model('BotToken', botTokenSchema);
 // Main bot instance
 const bot = new TelegramBot(mainBotToken, { polling: true });
 
-// List of unique emojis for reactions (make sure these emojis are valid according to Telegram's API)
+// List of unique emojis for reactions
 const myEmoji = ["👍", "❤️", "🔥", "💯", "😎", "😂", "🤔", "🤩", "🤡", "🎉", "🎵", "💎", "👑", "🦄", "💖", "🌟", "😜", "🎶", "✨", "💥", "🥳", "🌈", "💌", "🙌", "🌍"];
 
 // Function to escape special characters for MarkdownV2
@@ -76,7 +76,13 @@ bot.on('message', (msg) => {
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
-      reaction: doEmoji  // Ensure reaction is only the emoji (not a wrapped object)
+      reaction: JSON.stringify([
+        {
+          type: "emoji",
+          emoji: doEmoji,
+          is_big: true // Optional: To make the reaction big (true/false)
+        }
+      ])
     })
     .then(response => {
       console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
@@ -144,7 +150,13 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
           axios.post(`https://api.telegram.org/bot${storedBot.token}/setMessageReaction`, {
             chat_id: clonedChatId,
             message_id: clonedMessageId,
-            reaction: clonedEmoji  // Use only the emoji here, not the object
+            reaction: JSON.stringify([
+              {
+                type: "emoji",
+                emoji: clonedEmoji,
+                is_big: true // Optional: To make the reaction big (true/false)
+              }
+            ])
           })
           .then(response => {
             console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
