@@ -281,4 +281,35 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
   }
 });
 
+// Periodic cleanup of duplicate tokens in the database
+async function cleanupDuplicateTokens() {
+  try {
+    console.log('Cleaning up duplicate tokens...');
+
+    // Find all unique tokens in the database
+    const tokens = await BotToken.find().distinct('token');
+
+    // Iterate over the tokens and delete duplicates
+    for (let token of tokens) {
+      const duplicates = await BotToken.find({ token });
+
+      // If there are more than one entry for the token, delete the extra ones
+      if (duplicates.length > 1) {
+        const keepBot = duplicates[0]; // Keep the first one
+        const duplicateBots = duplicates.slice(1); // All others are duplicates
+
+        // Remove the duplicate bots from the database
+        await BotToken.deleteMany({ _id: { $in: duplicateBots.map(bot => bot._id) } });
+
+        console.log(`Removed ${duplicateBots.length} duplicate(s) for token: ${token}`);
+      }
+    }
+  } catch (error) {
+    console.error('Error cleaning up duplicate tokens:', error.message);
+  }
+}
+
+// Run the cleanup function every 10 minutes (600,000 milliseconds)
+setInterval(cleanupDuplicateTokens, 600000); // Cleanup every 10 minutes
+
 console.log('Main bot is running...');
