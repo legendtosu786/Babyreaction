@@ -172,19 +172,17 @@ bot.onText(/\/cloned/, async (msg) => {
   }
 
   try {
-    // Fetch unique bot tokens from MongoDB (avoiding duplicates)
-    const storedBots = await BotToken.aggregate([
-      { $group: { _id: "$token", botName: { $first: "$botName" } } }
-    ]);
+    // Fetch all bot tokens from MongoDB
+    const storedBots = await BotToken.find();
 
     if (storedBots.length === 0) {
       bot.sendMessage(chatId, 'No cloned bots found in the database.');
       return;
     }
 
-    // Format the list of bots (avoid duplicates)
+    // Format the list of bots
     const botList = storedBots.map((bot, index) => 
-      `${index + 1}. *Bot Name*: ${escapeMarkdownV2(bot.botName)}\n   *Token*: \`${escapeMarkdownV2(bot._id)}\``).join('\n\n');
+      `${index + 1}. *Bot Name*: ${escapeMarkdownV2(bot.botName)}\n   *Token*: \`${escapeMarkdownV2(bot.token)}\``).join('\n\n');
 
     const message = `*List of Cloned Bots:*\n\n${botList}`;
 
@@ -196,6 +194,7 @@ bot.onText(/\/cloned/, async (msg) => {
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
+
 
 
 
