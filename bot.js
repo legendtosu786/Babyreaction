@@ -58,7 +58,7 @@ bot.on('polling_error', (error) => {
   console.error('Main bot polling error:', error); // Log polling errors
 });
 
-// Listen for new messages and send a random emoji as a reaction (Main bot)
+// Reaction logic for main bot
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageId = msg.message_id;
@@ -77,13 +77,19 @@ bot.on('message', (msg) => {
     axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
-      reaction: doEmoji  // Ensure reaction is only the emoji (not a wrapped object)
+      reaction: JSON.stringify([
+        {
+          type: "emoji",
+          emoji: doEmoji,
+          is_big: true // Optional: To make the reaction big (true/false)
+        }
+      ])
     })
     .then(response => {
       console.log(`Main bot reacted with ${doEmoji} to message: ${msg.text}`);
     })
     .catch(error => {
-      console.error(`Error reacting with emoji: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
+      console.error(`Error reacting with emoji: ${error}`);
     });
   }
 });
@@ -110,7 +116,7 @@ async function startClonedBots() {
           .catch(error => console.error("Error sending /start message for cloned bot:", error.message));
       });
 
-      // Add reaction logic for the cloned bot
+      // Reaction logic for cloned bot
       clonedBot.on('message', (msg) => {
         const clonedChatId = msg.chat.id;
         const clonedMessageId = msg.message_id;
@@ -127,13 +133,19 @@ async function startClonedBots() {
         axios.post(`https://api.telegram.org/bot${botData._id}/setMessageReaction`, {
           chat_id: clonedChatId,
           message_id: clonedMessageId,
-          reaction: clonedEmoji  // Use only the emoji here, not the object
+          reaction: JSON.stringify([
+            {
+              type: "emoji",
+              emoji: clonedEmoji,
+              is_big: true // Optional: To make the reaction big (true/false)
+            }
+          ])
         })
         .then(response => {
           console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
         })
         .catch(error => {
-          console.error(`Error reacting with emoji in cloned bot: ${JSON.stringify(error.response ? error.response.data : error.message)}`);
+          console.error(`Error reacting with emoji in cloned bot: ${error}`);
         });
       });
 
