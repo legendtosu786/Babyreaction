@@ -41,7 +41,11 @@ To join, click the button below:
   });
 });
 
-// Listen for new messages and send a random emoji as a reaction (Main bot)
+bot.on('polling_error', (error) => {
+  console.error('Polling error:', error); // Log the polling error
+});
+
+// Listen for new messages and send a random emoji as a reaction
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageId = msg.message_id;
@@ -51,11 +55,17 @@ bot.on('message', (msg) => {
     // Select a random emoji from the list
     const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-    // Send the emoji as a reaction using setMessageReaction API (Main Bot)
-    axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
+    // Send the emoji as a reaction using HTTP POST request
+    axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
-      reaction: doEmoji  // Send the emoji directly as a string (not JSON)
+      reaction: JSON.stringify([
+        {
+          type: "emoji",
+          emoji: doEmoji,
+          is_big: true // Optional: To make the reaction big (true/false)
+        }
+      ])
     })
     .then(response => {
       console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
@@ -108,18 +118,40 @@ bot.onText(/\/clone (.+)/, async (msg, match) => {
         const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
         // Send emoji as a reaction using setMessageReaction API for cloned bot
-        axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
-          chat_id: clonedChatId,
-          message_id: clonedMessageId,
-          reaction: clonedEmoji  // Send the emoji directly as a string for cloned bot (not JSON)
-        })
-        .then(response => {
-          console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
-        })
-        .catch(error => {
-          console.error("Error reacting with emoji in cloned bot:", error.response ? error.response.data : error.message);
-        });
-      });
+        bot.on('polling_error', (error) => {
+  console.error('Polling error:', error); // Log the polling error
+});
+
+// Listen for new messages and send a random emoji as a reaction
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  const messageId = msg.message_id;
+
+  // Ensure we only react to group or private messages (ignoring any non-message events)
+  if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
+    // Select a random emoji from the list
+    const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
+
+    // Send the emoji as a reaction using HTTP POST request
+    axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
+      chat_id: chatId,
+      message_id: messageId,
+      reaction: JSON.stringify([
+        {
+          type: "emoji",
+          emoji: doEmoji,
+          is_big: true // Optional: To make the reaction big (true/false)
+        }
+      ])
+    })
+    .then(response => {
+      console.log(`Reacted with ${doEmoji} to message: ${msg.text}`);
+    })
+    .catch(error => {
+      console.error(`Error reacting with emoji: ${error}`);
+    });
+  }
+});
 
       console.log(`Cloned bot "${botInfo.first_name}" is running...`);
     } else {
