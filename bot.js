@@ -40,32 +40,38 @@ To join, click the button below:
   });
 });
 
+// Clone bot logic
 bot.onText(/\/clone (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const token = match[1].trim();
 
   try {
+    // Validate the provided bot token
     const response = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
     if (response.data.ok) {
       const botInfo = response.data.result;
 
       bot.sendMessage(chatId, `✅ Token is valid! Bot "${botInfo.first_name}" is starting...`);
 
+      // Create and start the new bot instance
       const clonedBot = new TelegramBot(token, { polling: true });
 
+      // Add reaction logic for the cloned bot
       clonedBot.on('message', (msg) => {
         const chatId = msg.chat.id;
         const messageId = msg.message_id;
 
-        if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup') {
-          const randomEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
-
-          clonedBot.sendMessage(chatId, randomEmoji, {
-            reply_to_message_id: messageId,
-          }).catch((error) => {
-            console.error("Error sending emoji:", error.message);
-          });
+        if (msg.text && msg.text.startsWith('/')) {
+          // Skip commands in the cloned bot
+          return;
         }
+
+        const randomEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
+        clonedBot.sendMessage(chatId, randomEmoji, {
+          reply_to_message_id: messageId,
+        }).catch((error) => {
+          console.error("Error sending emoji reaction:", error.message);
+        });
       });
 
       console.log(`Cloned bot "${botInfo.first_name}" is running...`);
