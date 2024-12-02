@@ -98,16 +98,17 @@ bot.on('message', (msg) => {
 async function startClonedBots() {
   try {
     // Fetch unique bot tokens from MongoDB
-    const storedBots = await BotToken.find();
+    const storedBots = await BotToken.aggregate([
+      { $group: { _id: "$token", botName: { $first: "$botName" } } }
+    ]);
 
     storedBots.forEach(botData => {
-      const clonedBot = new TelegramBot(botData.token, { polling: { autoStart: true } });
-      clonedBot.startPolling(); // Start polling for cloned bot
+      const clonedBot = new TelegramBot(botData._id, { polling: true });
 
       // Command: /start for the cloned bot
       clonedBot.onText(/\/start/, (msg) => {
         const chatId = msg.chat.id;
-        const text = `Hi, I am a cloned bot of *${botData.botName}*!`;
+        const text = `Hi, I am a cloned bot of *${botData.botName}*! \n\nI will react to your messages with random emojis.`;
 
         const escapedText = escapeMarkdownV2(text);
 
@@ -120,16 +121,32 @@ async function startClonedBots() {
         const clonedChatId = msg.chat.id;
         const clonedMessageId = msg.message_id;
 
-        // Skip if the message is a command
+        console.log(`Cloned bot received message: ${msg.text}, chatId: ${clonedChatId}, messageId: ${clonedMessageId}`);
+
+        // Skip if message is a command or non-reaction message
         if (msg.text && msg.text.startsWith('/')) return;
 
         // Select a random emoji from the list
         const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
-        clonedBot.sendMessage(clonedChatId, clonedEmoji, { reply_to_message_id: clonedMessageId })
-          .catch(error => {
-            console.error(`Error reacting with emoji in cloned bot: ${error}`);
-          });
+        // Send emoji as a reaction using setMessageReaction API for cloned bot
+        axios.post(`https://api.telegram.org/bot${botData._id}/setMessageReaction`, {
+          chat_id: clonedChatId,
+          message_id: clonedMessageId,
+          reaction: JSON.stringify([
+            {
+              type: "emoji",
+              emoji: clonedEmoji,
+              is_big: true // Optional: To make the reaction big (true/false)
+            }
+          ])
+        })
+        .then(response => {
+          console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
+        })
+        .catch(error => {
+          console.error(`Error reacting with emoji in cloned bot: ${error}`);
+        });
       });
 
       console.log(`Cloned bot "${botData.botName}" is running...`);
@@ -138,8 +155,10 @@ async function startClonedBots() {
     console.error('Error starting cloned bots:', error.message);
   }
 }
+
 // Start all cloned bots
 startClonedBots();
+
 
 // Command: /clone <bot_token>
 bot.onText(/\/clone (.+)/, async (msg, match) => {
