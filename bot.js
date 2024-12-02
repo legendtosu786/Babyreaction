@@ -117,7 +117,7 @@ async function startClonedBots() {
 
         console.log(`Cloned bot received message: ${msg.text}, chatId: ${clonedChatId}, messageId: ${clonedMessageId}`);
 
-        // Skip if the message is a command or non-reaction message
+        // Skip if message is a command or non-reaction message
         if (msg.text && msg.text.startsWith('/')) return;
 
         // Select a random emoji from the list
@@ -127,7 +127,7 @@ async function startClonedBots() {
         axios.post(`https://api.telegram.org/bot${botData._id}/setMessageReaction`, {
           chat_id: clonedChatId,
           message_id: clonedMessageId,
-          reaction: clonedEmoji  // Ensure only the emoji string is passed here
+          reaction: clonedEmoji  // Use only the emoji here, not the object
         })
         .then(response => {
           console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
