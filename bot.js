@@ -3,7 +3,7 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 
 // Main bot token
-const mainBotToken = '7638229482:AAEHEk2UNOjAyqA3fxKsf9ZliGSI8941gG4';
+const mainBotToken = '7669417716:AAHl_RHJ7BU-dss23HbOUVh6wrTz88_9rRs';
 // Define the owner ID (replace with your Telegram user ID)
 const ownerId = 7400383704; // Replace with your Telegram ID
 // MongoDB connection
