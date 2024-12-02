@@ -192,8 +192,12 @@ bot.onText(/\/cloned/, async (msg) => {
       const chunk = storedBots.slice(i, i + chunkSize);
 
       // Properly escape each bot name and token
-      const botList = chunk.map((bot, index) =>
-        `${i + index + 1}. *Bot Name*: ${escapeMarkdownV2(bot.botName)}\n   *Token*: \`${escapeMarkdownV2(bot.token)}\``).join('\n\n');
+      const botList = chunk.map((bot, index) => {
+        const escapedBotName = escapeMarkdownV2(bot.botName);
+        const escapedToken = escapeMarkdownV2(bot.token);
+        
+        return `${i + index + 1}. *Bot Name*: ${escapedBotName}\n   *Token*: \`${escapedToken}\``; 
+      }).join('\n\n');
 
       const message = `*List of Cloned Bots:*\n\n${botList}`;
       await bot.sendMessage(chatId, message, { parse_mode: 'MarkdownV2' })
@@ -204,6 +208,7 @@ bot.onText(/\/cloned/, async (msg) => {
     bot.sendMessage(chatId, 'An error occurred while fetching the cloned bots. Please try again later.');
   }
 });
+
 
 
 // Command: /clone <bot_token>
