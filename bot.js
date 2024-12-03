@@ -5,7 +5,7 @@ const axios = require('axios');
 
 // Replace with your bot's token
 const token = '7638229482:AAESVSpArBqvB64Yk8TyQxp4JtQIBsOzX9k';
-const bot = new TelegramBot(token{ polling: true });
+const bot = new TelegramBot(token, { polling: true });
 
 // Replace with your bot owner's user ID
 const ownerId = 7400383704; // Replace with your actual Telegram user ID
