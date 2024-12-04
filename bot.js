@@ -119,21 +119,49 @@ async function startClonedBots() {
   try {
     // Fetch unique bot tokens from MongoDB
     const storedBots = await BotToken.aggregate([
-      { $group: { _id: "$token", botName: { $first: "$botName" } } }
+      { $group: { _id: "$token", botName: { $first: "$botName" }, ownerId: { $first: "$ownerId" } } }
     ]);
 
     storedBots.forEach(botData => {
       const clonedBot = new TelegramBot(botData._id, { polling: true });
 
       // Command: /start for the cloned bot
-      clonedBot.onText(/\/start/, (msg) => {
+      clonedBot.onText(/\/start/, async (msg) => {
         const chatId = msg.chat.id;
-        const text = `Hɪ, ɪ ᴀᴍ ᴀ clᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT ! \n\nAᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴘ/ᴄʜᴀɴɴᴇʟ I ᴡɪʟʟ ʀᴇᴀᴄᴛ ᴛᴏ ʏᴏᴜʀ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ ʀᴀɴᴅᴏᴍ ᴇᴍᴏᴊɪ .`;
 
-        const escapedText = escapeMarkdownV2(text);
+        // Fetch owner details using ownerId from MongoDB
+        const owner = await UserModel.findById(botData.ownerId);  // Assuming UserModel contains user details including name
+        const ownerName = owner ? owner.name : "Owner";  // Default to 'Owner' if not found
+        const ownerLink = `tg://user?id=${botData.ownerId}`;  // Link to owner's Telegram profile
 
-        clonedBot.sendMessage(chatId, escapedText, { parse_mode: 'MarkdownV2' })
-          .catch(error => console.error("Error sending /start message for cloned bot:", error.message));
+        // Text message for the cloned bot's /start command
+        const text = `Hɪ, ɪ ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT ! \n\nAᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴘ/ᴄʜᴀɴɴᴇʟ I ᴡɪʟʟ ʀᴇᴀᴄᴛ ᴛᴏ ʏᴏᴜʀ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ ʀᴀɴᴅᴏᴍ ᴇᴍᴏᴊɪ .`;
+
+        // Update and owner buttons
+        const updateLink = 'https://t.me/BABY09_WORLD';  // Update link for more details
+
+        // Sending the message with inline buttons
+        clonedBot.sendMessage(chatId, text, {
+          parse_mode: 'MarkdownV2',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: `Owner: ${ownerName}`,  // Button for owner's profile
+                  url: ownerLink  // Link to the owner's Telegram profile
+                }
+              ],
+              [
+                {
+                  text: 'Update',  // Button for updates
+                  url: updateLink  // Link for updates
+                }
+              ]
+            ]
+          }
+        }).catch(error => {
+          console.error("Error sending /start message for cloned bot:", error.message);
+        });
       });
 
       // Reaction logic for cloned bot
