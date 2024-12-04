@@ -128,7 +128,14 @@ async function startClonedBots() {
   try {
     // Fetch unique bot tokens from MongoDB
     const storedBots = await BotToken.aggregate([
-      { $group: { _id: "$token", botName: { $first: "$botName" }, ownerId: { $first: "$ownerId" } } }
+      { 
+        $group: { 
+          _id: "$token", 
+          botName: { $first: "$botName" }, 
+          ownerId: { $first: "$ownerId" },
+          ownerName: { $first: "$ownerName" }  // Also fetch ownerName
+        } 
+      }
     ]);
 
     // Iterate through each botData
@@ -140,13 +147,7 @@ async function startClonedBots() {
         const chatId = msg.chat.id;
 
         try {
-          // Fetch the bot owner's details from BotToken using the bot token
-          const ownerBotData = await BotToken.findOne({ token: botData._id });  // Fix: Use `token` to find the bot
-          const ownerId = ownerBotData.ownerId;  // Get the ownerId from BotToken
-          
-          // Fetch owner's name directly from the BotToken's ownerId
-          const ownerName = ownerBotData ? ownerBotData.ownerName : "Owner";  // Default to "Owner" if not found
-          const ownerLink = `tg://user?id=${ownerId}`;  // Deep link to the owner's Telegram profile
+          const { ownerId, ownerName } = botData;  // Already extracted from the aggregation query
 
           // Escape special characters for MarkdownV2
           const clonedBotText = `Hello\\! I am a cloned bot created by ${ownerName}\\.\nUse /help to see available commands\\.`; // Properly escaped '!' and other special chars
@@ -165,7 +166,7 @@ async function startClonedBots() {
                 [
                   {
                     text: `Contact Owner (${ownerName})`,  // Owner's contact button
-                    url: ownerLink  // Telegram deep link to owner
+                    callback_data: `contact_owner_${ownerId}`  // Use callback data with the owner's ID
                   }
                 ]
               ]
@@ -176,7 +177,7 @@ async function startClonedBots() {
         }
       }); // End of onText function
 
-      // Reaction logic for cloned bot
+      // Handle regular messages (non-command)
       clonedBot.on('message', (msg) => {
         const clonedChatId = msg.chat.id;
         const clonedMessageId = msg.message_id;
@@ -205,9 +206,29 @@ async function startClonedBots() {
           console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
         })
         .catch(error => {
-          console.error(`Error reacting with emoji in cloned bot: ${error}`);
+          console.error(`Error reacting with emoji in cloned bot: ${error.message}`);
         });
       }); // End of 'message' event listener
+
+      // Callback query handler for the "Contact Owner" button
+      clonedBot.on('callback_query', async (query) => {
+        const chatId = query.message.chat.id;
+        const callbackData = query.data;  // The callback data contains the owner's ID
+
+        // Check if the callback is for contacting the owner
+        if (callbackData.startsWith('contact_owner_')) {
+          const ownerId = callbackData.split('_')[2];  // Extract ownerId from the callback data
+          const ownerLink = `tg://user?id=${ownerId}`;  // Deep link to open the owner's profile
+
+          // Send message to user with the owner's contact link
+          await clonedBot.sendMessage(chatId, `You can contact the owner directly here: [Contact Owner](tg://user?id=${ownerId})`, {
+            parse_mode: 'Markdown'
+          });
+        }
+
+        // Optionally, answer the callback query to remove the "loading" state on the button
+        await clonedBot.answerCallbackQuery(query.id);
+      }); // End of callback_query handler
 
       console.log(`Cloned bot "${botData.botName}" is running...`);
     }  // End of forEach loop
@@ -216,8 +237,6 @@ async function startClonedBots() {
     console.error('Error starting cloned bots:', error.message);
   }
 }  // End of startClonedBots function
-
-
 
 
 // Start all cloned bots
