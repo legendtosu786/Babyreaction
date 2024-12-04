@@ -162,12 +162,11 @@ async function startClonedBots() {
           );
 
           // Escape special characters for MarkdownV2
-          const clonedBotText = `Hᴇʏ, ɪ ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ!
+          const clonedBotText = `Hᴇʏ, ɪ ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ\!
 
-Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs!
+Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs\!
 
 Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT 🙃`;
-
 
           // Send message with inline keyboard
           await clonedBot.sendMessage(chatId, clonedBotText, {
@@ -183,6 +182,7 @@ Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT 🙃`;
               ]
             }
           });
+
 
         } catch (error) {
           console.error("Error sending /start message for cloned bot:", error.message);
