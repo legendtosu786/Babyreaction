@@ -80,28 +80,13 @@ bot.on('polling_error', (error) => {
 // Reaction logic for main bot
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
-  const messageId = msg.message_id || (msg.channel_post && msg.channel_post.message_id); // channel post will have message_id in channel posts
+  const messageId = msg.message_id;
 
-  console.log(`Received message: ${msg.text || (msg.channel_post && msg.channel_post.text)}, chatId: ${chatId}, messageId: ${messageId}`);
+  console.log(Received message: ${msg.text}, chatId: ${chatId}, messageId: ${messageId});
 
-  // Ensure we only react to group, private, or channel messages
+  // Ensure we only react to group or private messages (ignoring any non-message events)
   if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
-
-    // Handle channel messages
-    if (msg.chat.type === 'channel' && msg.channel_post) {
-      console.log("This is a channel message");
-      // Your channel message logic here
-      bot.sendMessage(chatId, "This is a response to a channel message");
-    }
-
-    // Handle group/private messages
-    if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup') {
-      console.log("This is a group or private message");
-      // Your group or private message logic here
-      bot.sendMessage(chatId, "This is a response to a group or private message");
-    }
-  }
-});
+    // Skip if the message is a command or non-reaction message
     
 
     // Select a random emoji from the list
