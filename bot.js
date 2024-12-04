@@ -84,7 +84,7 @@ bot.on('message', (msg) => {
 
   console.log(`Received message: ${msg.text}, chatId: ${chatId}, messageId: ${messageId}`);
 
-  bot.on('message', (msg) => {
+bot.on('message', (msg) => {
   // Check if the message is from a channel
   if (msg.chat.type === 'channel') {
     const chatId = msg.chat.id;          // Channel ID
