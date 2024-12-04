@@ -124,6 +124,38 @@ bot.on('message', (msg) => {
 });
 
 // Function to start cloned bots
+// Function to escape special characters for MarkdownV2
+function escapeMarkdownV2(text) {
+  const escapeChars = [
+    { char: '!', escaped: '\\!' },
+    { char: '_', escaped: '\\_' },
+    { char: '*', escaped: '\\*' },
+    { char: '[', escaped: '\\[' },
+    { char: ']', escaped: '\\]' },
+    { char: '(', escaped: '\\(' },
+    { char: ')', escaped: '\\)' },
+    { char: '~', escaped: '\\~' },
+    { char: '`', escaped: '\\`' },
+    { char: '{', escaped: '\\{' },
+    { char: '}', escaped: '\\}' },
+    { char: '|', escaped: '\\|' },
+    { char: '>', escaped: '\\>' },
+    { char: '#', escaped: '\\#' },
+    { char: '+', escaped: '\\+' },
+    { char: '-', escaped: '\\-' },
+    { char: '=', escaped: '\\=' },
+    { char: '.', escaped: '\\.' },
+    { char: ',', escaped: '\\,' },
+  ];
+
+  escapeChars.forEach(item => {
+    const regex = new RegExp(`\\${item.char}`, 'g');
+    text = text.replace(regex, item.escaped);
+  });
+
+  return text;
+}
+
 async function startClonedBots() {
   try {
     // Fetch unique bot tokens from MongoDB
@@ -143,8 +175,8 @@ async function startClonedBots() {
         const ownerName = owner ? owner.name : "Owner";  // Default to 'Owner' if not found
         const ownerLink = `tg://user?id=${botData.ownerId}`;  // Link to owner's Telegram profile
 
-        // Text message for the cloned bot's /start command
-        const text = `Hɪ, ɪ ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT ! \n\nAᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴘ/ᴄʜᴀɴɴᴇʟ I ᴡɪʟʟ ʀᴇᴀᴄᴛ ᴛᴏ ʏᴏᴜʀ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ ʀᴀɴᴅᴏᴍ ᴇᴍᴏᴊɪ .`;
+        // Text message for the cloned bot's /start command (escaping special characters)
+        const text = escapeMarkdownV2(`Hɪ, ɪ ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT ! \n\nAᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴘ/ᴄʜᴀɴɴᴇʟ I ᴡɪʟʟ ʀᴇᴀᴄᴛ ᴛᴏ ʏᴏᴜʀ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ ʀᴀɴᴅᴏᴍ ᴇᴍᴏᴊɪ .`);
 
         // Update and owner buttons
         const updateLink = 'https://t.me/BABY09_WORLD';  // Update link for more details
@@ -172,6 +204,13 @@ async function startClonedBots() {
           console.error("Error sending /start message for cloned bot:", error.message);
         });
       });
+    });
+
+  } catch (error) {
+    console.error("Error in starting cloned bots:", error.message);
+  }
+}
+
 
       // Reaction logic for cloned bot
       clonedBot.on('message', (msg) => {
