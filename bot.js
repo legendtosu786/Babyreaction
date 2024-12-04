@@ -141,7 +141,6 @@ async function startClonedBots() {
       }
     ]);
 
-
     // Iterate through each botData
     for (const botData of storedBots) {
       const clonedBot = new TelegramBot(botData._id, { polling: true });
@@ -149,7 +148,7 @@ async function startClonedBots() {
       // Command: /start for the cloned bot
       clonedBot.onText(/\/start/, async (msg) => {
         const chatId = msg.chat.id;
-        
+
         try {
           const { ownerId, ownerName } = botData;  // Already extracted from the aggregation query
 
@@ -163,7 +162,7 @@ async function startClonedBots() {
           );
 
           // Escape special characters for MarkdownV2
-          const clonedBotText = `Hello\\! I am a cloned bot created by ${ownerName}\\.\nUse /help to see available commands\\.`; // Properly escaped '!' and other special chars
+          const clonedBotText = `Hᴇʏ, I ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ!\\n\\n~Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs!~\\n\\nClᴏɴᴇᴅ ᴏғ @AUTO_REACXTION_BOT 🙃`;
 
           // Send message with inline keyboard
           await clonedBot.sendMessage(chatId, clonedBotText, {
@@ -172,23 +171,19 @@ async function startClonedBots() {
               inline_keyboard: [
                 [
                   {
-                    text: 'Update Bot',  // Button text
+                    text: '˹ ʙᴀʙʏ-ᴍᴜsɪᴄ ™˼𓅂',  // Button text
                     url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
-                  }
-                ],
-                [
-                  {
-                    text: `Contact Owner (${ownerName})`,  // Owner's contact button
-                    callback_data: `contact_owner_${ownerId}`  // Use callback_data to handle the button action
                   }
                 ]
               ]
             }
           });
+
         } catch (error) {
           console.error("Error sending /start message for cloned bot:", error.message);
         }
       }); // End of onText function
+
 
       // Handle regular messages (non-command)
       clonedBot.on('message', (msg) => {
