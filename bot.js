@@ -141,8 +141,6 @@ async function startClonedBots() {
       }
     ]);
 
-    // Define the emoji array (ensure it's defined properly)
-    const myEmoji = ["😊", "😎", "😍", "🤖", "🎉"]; // Example emojis, adjust as needed
 
     // Iterate through each botData
     for (const botData of storedBots) {
@@ -181,7 +179,7 @@ async function startClonedBots() {
                 [
                   {
                     text: `Contact Owner (${ownerName})`,  // Owner's contact button
-                    user_id: ownerId  // Use ownerId for callback data
+                    callback_data: `contact_owner_${ownerId}`  // Use callback_data to handle the button action
                   }
                 ]
               ]
@@ -206,13 +204,7 @@ async function startClonedBots() {
         axios.post(`https://api.telegram.org/bot${botData._id}/setMessageReaction`, {
           chat_id: clonedChatId,
           message_id: clonedMessageId,
-          reaction: JSON.stringify([
-            {
-              type: "emoji",
-              emoji: clonedEmoji,
-              is_big: true // Optional: To make the reaction big (true/false)
-            }
-          ])
+          reaction: clonedEmoji  // Fixed: send emoji directly as the reaction
         })
         .then(response => {
           console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
@@ -229,6 +221,7 @@ async function startClonedBots() {
     console.error('Error starting cloned bots:', error.message);
   }
 }  // End of startClonedBots function
+
 
 
 
