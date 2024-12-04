@@ -82,7 +82,8 @@ bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const messageId = msg.message_id;
 
-  console.log(Received message: ${msg.text}, chatId: ${chatId}, messageId: ${messageId});
+  console.log(`Received message: ${msg.text}, chatId: ${chatId}, messageId: ${messageId}`);
+
 
   // Ensure we only react to group or private messages (ignoring any non-message events)
   if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
