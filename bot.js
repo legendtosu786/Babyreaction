@@ -170,10 +170,6 @@ async function startClonedBots() {
         });
       });
     });
-  } catch (error) {
-    console.error('Error starting cloned bots:', error.message);
-  }
-}
 
 
       // Reaction logic for cloned bot
