@@ -141,6 +141,9 @@ async function startClonedBots() {
       }
     ]);
 
+    // Define the emoji array (ensure it's defined properly)
+    const myEmoji = ["😊", "😎", "😍", "🤖", "🎉"]; // Example emojis, adjust as needed
+
     // Iterate through each botData
     for (const botData of storedBots) {
       const clonedBot = new TelegramBot(botData._id, { polling: true });
@@ -153,12 +156,12 @@ async function startClonedBots() {
           const { ownerId, ownerName } = botData;  // Already extracted from the aggregation query
 
           // Save the cloner's ID (the user who started the bot) in the database
-          const clonerId = msg.from.id.toString();  // Convert userId to string
-          
+          const userBots = await BotToken.find({ userId: msg.from.id }); // Assuming you want to fetch userBots
+
           // Save clonerId in the BotToken collection
           await BotToken.updateOne(
             { token: botData._id },
-            { $set: { clonerId: clonerId } }  // Save the cloner's ID as string
+            { $set: { clonerId: msg.from.id.toString() } }  // Save the cloner's ID as string
           );
 
           // Escape special characters for MarkdownV2
@@ -178,7 +181,7 @@ async function startClonedBots() {
                 [
                   {
                     text: `Contact Owner (${ownerName})`,  // Owner's contact button
-                    callback_data: `contact_owner_${clonerId}`  // Use clonerId for callback data
+                    user_id: ownerId  // Use ownerId for callback data
                   }
                 ]
               ]
@@ -195,9 +198,6 @@ async function startClonedBots() {
         const clonedMessageId = msg.message_id;
 
         console.log(`Cloned bot received message: ${msg.text}, chatId: ${clonedChatId}, messageId: ${clonedMessageId}`);
-
-        // Skip if message is a command or non-reaction message
-        if (msg.text && msg.text.startsWith('/')) return;
 
         // Select a random emoji from the list
         const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
@@ -222,26 +222,6 @@ async function startClonedBots() {
         });
       }); // End of 'message' event listener
 
-      // Callback query handler for the "Contact Owner" button
-      clonedBot.on('callback_query', async (query) => {
-        const chatId = query.message.chat.id;
-        const callbackData = query.data;  // The callback data contains the cloner's ID
-
-        // Check if the callback is for contacting the owner (cloner)
-        if (callbackData.startsWith('contact_owner_')) {
-          const clonerId = callbackData.split('_')[2];  // Extract clonerId from the callback data
-          const clonerLink = `tg://user?id=${clonerId}`;  // Deep link to open the cloner's profile
-
-          // Send message to user with the cloner's contact link
-          await clonedBot.sendMessage(chatId, `You can contact the cloner directly here: [Contact Cloner](tg://user?id=${ownerId})`, {
-            parse_mode: 'Markdown'
-          });
-        }
-
-        // Optionally, answer the callback query to remove the "loading" state on the button
-        await clonedBot.answerCallbackQuery(query.id);
-      }); // End of callback_query handler
-
       console.log(`Cloned bot "${botData.botName}" is running...`);
     }  // End of forEach loop
 
@@ -249,6 +229,7 @@ async function startClonedBots() {
     console.error('Error starting cloned bots:', error.message);
   }
 }  // End of startClonedBots function
+
 
 
 // Start all cloned bots
