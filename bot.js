@@ -162,27 +162,26 @@ async function startClonedBots() {
           );
 
           // Escape special characters for MarkdownV2
-          const clonedBotText = `Hᴇʏ, ɪ ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ\!
+          const clonedBotText = `Hᴇʏ, ɪ ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ!
 
-Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs\!
+Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs!
 
-Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT \🙃`;
+Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT 🫡`;
 
+await clonedBot.sendMessage(chatId, clonedBotText, {
+  parse_mode: 'HTML',  // Using HTML parse mode instead of MarkdownV2
+  reply_markup: {
+    inline_keyboard: [
+      [
+        {
+          text: '˹ ʙᴀʙʏ-ᴍᴜsɪᴄ ™˼𓅂',  // Button text
+          url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
+        }
+      ]
+    ]
+  }
+});
 
-          // Send message with inline keyboard
-          await clonedBot.sendMessage(chatId, clonedBotText, {
-            parse_mode: 'MarkdownV2',
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: '˹ ʙᴀʙʏ-ᴍᴜsɪᴄ ™˼𓅂',  // Button text
-                    url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
-                  }
-                ]
-              ]
-            }
-          });
 
 
         } catch (error) {
