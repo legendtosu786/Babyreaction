@@ -170,12 +170,6 @@ async function startClonedBots() {
           console.error("Error sending /start message for cloned bot:", error.message);
         });
       }); // End of onText function
-    }); // End of forEach loop
-  } catch (error) {
-    console.error('Error starting cloned bots:', error.message);
-  }
-} // End of startClonedBots function
-
 
       // Reaction logic for cloned bot
       clonedBot.on('message', (msg) => {
@@ -208,14 +202,16 @@ async function startClonedBots() {
         .catch(error => {
           console.error(`Error reacting with emoji in cloned bot: ${error}`);
         });
-      });
+      }); // End of 'message' event listener
 
       console.log(`Cloned bot "${botData.botName}" is running...`);
-    });
+    });  // End of forEach loop
+
   } catch (error) {
     console.error('Error starting cloned bots:', error.message);
   }
-}
+}  // End of startClonedBots function
+
 
 // Start all cloned bots
 startClonedBots();
