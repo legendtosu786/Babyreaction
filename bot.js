@@ -26,12 +26,6 @@ const botTokenSchema = new mongoose.Schema({
   clonerId: { type: String, required: false }  // Set clonerId as String
 });
 
-const clonerId = msg.from.id.toString();  // Convert userId to string
-
-await BotToken.updateOne(
-  { token: botData._id },
-  { $set: { clonerId: clonerId } }  // Save as string
-);
 
 
 const BotToken = mongoose.model('BotToken', botTokenSchema);
