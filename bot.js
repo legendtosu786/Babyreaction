@@ -143,8 +143,8 @@ async function startClonedBots() {
         const ownerName = owner ? owner.name : "Owner";  // Default to 'Owner' if not found
         const ownerLink = `tg://user?id=${botData.ownerId}`;  // Telegram deep link
 
-        // Send cloned bot's welcome message with two inline buttons
-        const clonedBotText = `Hello! I am a cloned bot created by ${ownerName}. \`👋\`\nUse /help to see available commands.`;
+        // Escape special characters for MarkdownV2
+        const clonedBotText = `Hello\! I am a cloned bot created by ${ownerName}\. \`👋\`\nUse /help to see available commands\.`; // Escaped '!' and other special chars
 
         clonedBot.sendMessage(chatId, clonedBotText, {
           parse_mode: 'MarkdownV2',
