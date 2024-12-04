@@ -87,7 +87,7 @@ bot.on('message', (msg) => {
   // Ensure we only react to group or private messages (ignoring any non-message events)
   if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
     // Skip if the message is a command or non-reaction message
-    if (msg.text && msg.text.startsWith('/')) return;
+    
 
     // Select a random emoji from the list
     const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
