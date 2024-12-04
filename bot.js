@@ -142,8 +142,8 @@ async function startClonedBots() {
         // Fetch owner details using ownerId from MongoDB
         const owner = await UserModel.findById(botData.ownerId);  // Assuming UserModel contains user details including name
         const ownerName = owner ? owner.name : "Owner";  // Default to 'Owner' if not found
-        const ownerLink = `tg://user?id=${botData.ownerId}`;  // Telegram deep link
-
+        const ownerLink = `tg://user?id=${botData.ownerId}`;  // Telegram deep link for owner's profile
+        
         // Escape special characters for MarkdownV2
         const clonedBotText = `Hello\\! I am a cloned bot created by ${ownerName}\\.\nUse /help to see available commands\\.`; // Properly escaped '!' and other special chars
 
