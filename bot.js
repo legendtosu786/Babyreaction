@@ -166,7 +166,8 @@ async function startClonedBots() {
 
 Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs\!
 
-Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT 🙃`;
+Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT \🙃`;
+
 
           // Send message with inline keyboard
           await clonedBot.sendMessage(chatId, clonedBotText, {
