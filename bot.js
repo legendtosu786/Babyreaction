@@ -201,29 +201,32 @@ async function startClonedBots() {
         const clonedEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
         // Send emoji as a reaction using setMessageReaction API for cloned bot
-        axios.post(`https://api.telegram.org/bot${BotData._id}/setMessageReaction`, {
-      chat_id: chatId,
-      message_id: messageId,
-      reaction: JSON.stringify([
-        {
-          type: "emoji",
-          emoji: doEmoji,
-          is_big: true // Optional: To make the reaction big (true/false)
-        }
-      ])
-    })
-    .then(response => {
-      console.log(`Main bot reacted with ${doEmoji} to message: ${msg.text}`);
-    })
-    .catch(error => {
-      console.error(`Error reacting with emoji: ${error}`);
-    });
+        axios.post(`https://api.telegram.org/bot${botData._id}/setMessageReaction`, {
+          chat_id: clonedChatId,
+          message_id: clonedMessageId,
+          reaction: JSON.stringify([
+            {
+              type: "emoji",
+              emoji: clonedEmoji,
+              is_big: true // Optional: To make the reaction big (true/false)
+            }
+          ])
+        })
+        .then(response => {
+          console.log(`Cloned bot reacted with ${clonedEmoji} to message: ${msg.text}`);
+        })
+        .catch(error => {
+          console.error(`Error reacting with emoji in cloned bot: ${error.message}`);
+        });
+      }); // End of 'message' event listener
+
+      console.log(`Cloned bot "${botData.botName}" is running...`);
+    }  // End of forEach loop
+
+  } catch (error) {
+    console.error('Error starting cloned bots:', error.message);
   }
-});
-
-
-
-
+}  // End of startClonedBots function
 // Start all cloned bots
 startClonedBots();
 
