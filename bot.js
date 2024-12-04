@@ -4,14 +4,14 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 
 // Replace with your bot's token
-const token = '7638229482:AAGIQX05YWeaEfjjgY5aHm-HVMZCOMkxsis';
+const token = '7669417716:AAEdbvabJbNl6eqZyXCohL4GQmbveYscUOk';
 const bot = new TelegramBot(token, { polling: true });
 
 // Replace with your bot owner's user ID
 const ownerId = 7400383704; // Replace with your actual Telegram user ID
 
 // MongoDB Connection
-mongoose.connect('mongodb+srv://Alisha:Alisha123@cluster0.yqcpftw.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://Yash_607:Yash_607@cluster0.r3s9sbo.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
