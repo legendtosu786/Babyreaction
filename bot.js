@@ -22,8 +22,10 @@ mongoose.connect('mongodb+srv://Alisha:Alisha123@cluster0.yqcpftw.mongodb.net/?r
 const botTokenSchema = new mongoose.Schema({
   botName: String,
   token: String,
-  ownerId: mongoose.Schema.Types.ObjectId, // Link to the user who owns this bot
+  ownerId: mongoose.Schema.Types.ObjectId, // Original owner ka user ID
+  clonerId: mongoose.Schema.Types.ObjectId, // Cloner ka user ID
 });
+
 
 const BotToken = mongoose.model('BotToken', botTokenSchema);
 
@@ -145,9 +147,18 @@ async function startClonedBots() {
       // Command: /start for the cloned bot
       clonedBot.onText(/\/start/, async (msg) => {
         const chatId = msg.chat.id;
-
+        
         try {
           const { ownerId, ownerName } = botData;  // Already extracted from the aggregation query
+
+          // Save the cloner's ID (the user who started the bot) in the database
+          const clonerId = msg.from.id;  // Get the ID of the user who started the bot
+          
+          // Save clonerId in the BotToken collection
+          await BotToken.updateOne(
+            { token: botData._id },
+            { $set: { clonerId: clonerId } }  // Save the cloner's ID
+          );
 
           // Escape special characters for MarkdownV2
           const clonedBotText = `Hello\\! I am a cloned bot created by ${ownerName}\\.\nUse /help to see available commands\\.`; // Properly escaped '!' and other special chars
@@ -166,7 +177,7 @@ async function startClonedBots() {
                 [
                   {
                     text: `Contact Owner (${ownerName})`,  // Owner's contact button
-                    callback_data: `contact_owner_${ownerId}`  // Use callback data with the owner's ID
+                    callback_data: `contact_owner_${clonerId}`  // Use clonerId for callback data
                   }
                 ]
               ]
@@ -213,15 +224,15 @@ async function startClonedBots() {
       // Callback query handler for the "Contact Owner" button
       clonedBot.on('callback_query', async (query) => {
         const chatId = query.message.chat.id;
-        const callbackData = query.data;  // The callback data contains the owner's ID
+        const callbackData = query.data;  // The callback data contains the cloner's ID
 
-        // Check if the callback is for contacting the owner
+        // Check if the callback is for contacting the owner (cloner)
         if (callbackData.startsWith('contact_owner_')) {
-          const ownerId = callbackData.split('_')[2];  // Extract ownerId from the callback data
-          const ownerLink = `tg://user?id=${ownerId}`;  // Deep link to open the owner's profile
+          const clonerId = callbackData.split('_')[2];  // Extract clonerId from the callback data
+          const clonerLink = `tg://user?id=${clonerId}`;  // Deep link to open the cloner's profile
 
-          // Send message to user with the owner's contact link
-          await clonedBot.sendMessage(chatId, `You can contact the owner directly here: [Contact Owner](tg://user?id=${ownerId})`, {
+          // Send message to user with the cloner's contact link
+          await clonedBot.sendMessage(chatId, `You can contact the cloner directly here: [Contact Cloner](tg://user?id=${clonerId})`, {
             parse_mode: 'Markdown'
           });
         }
@@ -237,7 +248,6 @@ async function startClonedBots() {
     console.error('Error starting cloned bots:', error.message);
   }
 }  // End of startClonedBots function
-
 
 // Start all cloned bots
 startClonedBots();
