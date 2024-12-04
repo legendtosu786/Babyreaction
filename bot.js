@@ -11,6 +11,9 @@ const bot = new TelegramBot(token, { polling: true });
 const ownerId = 7400383704; // Replace with your actual Telegram user ID
 
 // MongoDB connection
+const mongoose = require('mongoose');
+
+// MongoDB Connection
 mongoose.connect('mongodb+srv://Alisha:Alisha123@cluster0.yqcpftw.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -22,10 +25,19 @@ mongoose.connect('mongodb+srv://Alisha:Alisha123@cluster0.yqcpftw.mongodb.net/?r
 const botTokenSchema = new mongoose.Schema({
   botName: String,
   token: String,
-  userId: Number, // The user ID of the owner of the cloned bot
+  ownerId: mongoose.Schema.Types.ObjectId, // Link to the user who owns this bot
 });
 
 const BotToken = mongoose.model('BotToken', botTokenSchema);
+
+// MongoDB Schema for User (owner of the bot)
+const userSchema = new mongoose.Schema({
+  name: String,  // Owner's name
+  userId: { type: Number, unique: true },  // Telegram user ID (to link with the bot)
+});
+
+const UserModel = mongoose.model('User', userSchema);
+
 
 
 // List of unique emojis for reactions
