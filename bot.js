@@ -124,38 +124,6 @@ bot.on('message', (msg) => {
 });
 
 // Function to start cloned bots
-// Function to escape special characters for MarkdownV2
-function escapeMarkdownV2(text) {
-  const escapeChars = [
-    { char: '!', escaped: '\\!' },
-    { char: '_', escaped: '\\_' },
-    { char: '*', escaped: '\\*' },
-    { char: '[', escaped: '\\[' },
-    { char: ']', escaped: '\\]' },
-    { char: '(', escaped: '\\(' },
-    { char: ')', escaped: '\\)' },
-    { char: '~', escaped: '\\~' },
-    { char: '`', escaped: '\\`' },
-    { char: '{', escaped: '\\{' },
-    { char: '}', escaped: '\\}' },
-    { char: '|', escaped: '\\|' },
-    { char: '>', escaped: '\\>' },
-    { char: '#', escaped: '\\#' },
-    { char: '+', escaped: '\\+' },
-    { char: '-', escaped: '\\-' },
-    { char: '=', escaped: '\\=' },
-    { char: '.', escaped: '\\.' },
-    { char: ',', escaped: '\\,' },
-  ];
-
-  escapeChars.forEach(item => {
-    const regex = new RegExp(`\\${item.char}`, 'g');
-    text = text.replace(regex, item.escaped);
-  });
-
-  return text;
-}
-
 async function startClonedBots() {
   try {
     // Fetch unique bot tokens from MongoDB
