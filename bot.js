@@ -162,7 +162,8 @@ async function startClonedBots() {
           );
 
           // Escape special characters for MarkdownV2
-          const clonedBotText = `Hᴇʏ, I ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ!\\n\\n~Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs!~\\n\\nClᴏɴᴇᴅ ᴏғ @AUTO_REACXTION_BOT 🙃`;
+          const clonedBotText = `Hᴇʏ, I ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ\\!\\n\\n~Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs\\!~\\n\\nClᴏɴᴇᴅ ᴏғ @AUTO_REACXTION_BOT 🙃`;
+
           // Send message with inline keyboard
           await clonedBot.sendMessage(chatId, clonedBotText, {
             parse_mode: 'MarkdownV2',
@@ -182,7 +183,6 @@ async function startClonedBots() {
           console.error("Error sending /start message for cloned bot:", error.message);
         }
       }); // End of onText function
-
 
       // Handle regular messages (non-command)
       clonedBot.on('message', (msg) => {
