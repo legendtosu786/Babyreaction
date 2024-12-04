@@ -140,8 +140,8 @@ async function startClonedBots() {
         const chatId = msg.chat.id;
 
         try {
-          // Fetch the bot owner's details from BotToken using the ownerId
-          const ownerBotData = await BotToken.findOne({ _id: botData._id });  // Fetch BotToken for this bot
+          // Fetch the bot owner's details from BotToken using the bot token
+          const ownerBotData = await BotToken.findOne({ token: botData._id });  // Fix: Use `token` to find the bot
           const ownerId = ownerBotData.ownerId;  // Get the ownerId from BotToken
           
           // Fetch owner's name directly from the BotToken's ownerId
@@ -216,6 +216,7 @@ async function startClonedBots() {
     console.error('Error starting cloned bots:', error.message);
   }
 }  // End of startClonedBots function
+
 
 
 
