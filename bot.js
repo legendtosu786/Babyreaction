@@ -131,6 +131,7 @@ async function startClonedBots() {
       { $group: { _id: "$token", botName: { $first: "$botName" }, ownerId: { $first: "$ownerId" } } }
     ]);
 
+    // Iterate through each botData
     storedBots.forEach(botData => {
       const clonedBot = new TelegramBot(botData._id, { polling: true });
 
@@ -168,8 +169,12 @@ async function startClonedBots() {
         }).catch((error) => {
           console.error("Error sending /start message for cloned bot:", error.message);
         });
-      });
-    });
+      }); // End of onText function
+    }); // End of forEach loop
+  } catch (error) {
+    console.error('Error starting cloned bots:', error.message);
+  }
+} // End of startClonedBots function
 
 
       // Reaction logic for cloned bot
