@@ -143,10 +143,23 @@ async function startClonedBots() {
         const ownerName = owner ? owner.name : "Owner";  // Default to 'Owner' if not found
         const ownerLink = `tg://user?id=${botData.ownerId}`;  // Telegram deep link
 
-        // Send cloned bot's welcome message
+        // Send cloned bot's welcome message with an inline button for updating
         const clonedBotText = `Hello! I am a cloned bot created by ${ownerName}. 👋\nUse /help to see available commands.`;
+        
         clonedBot.sendMessage(chatId, clonedBotText, {
-          parse_mode: 'MarkdownV2'
+          parse_mode: 'MarkdownV2',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: 'Update Bot',  // Button text
+                  url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
+                }
+              ]
+            ]
+          }
+        }).catch((error) => {
+          console.error("Error sending /start message for cloned bot:", error.message);
         });
       });
 
