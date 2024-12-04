@@ -10,9 +10,6 @@ const bot = new TelegramBot(token, { polling: true });
 // Replace with your bot owner's user ID
 const ownerId = 7400383704; // Replace with your actual Telegram user ID
 
-// MongoDB connection
-const mongoose = require('mongoose');
-
 // MongoDB Connection
 mongoose.connect('mongodb+srv://Alisha:Alisha123@cluster0.yqcpftw.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
