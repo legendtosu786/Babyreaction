@@ -146,6 +146,7 @@ async function startClonedBots() {
         // Escape special characters for MarkdownV2
         const clonedBotText = `Hello\! I am a cloned bot created by ${ownerName}\. \`👋\`\nUse /help to see available commands\.`; // Escaped '!' and other special chars
 
+        // Send message with inline buttons
         clonedBot.sendMessage(chatId, clonedBotText, {
           parse_mode: 'MarkdownV2',
           reply_markup: {
@@ -168,6 +169,12 @@ async function startClonedBots() {
           console.error("Error sending /start message for cloned bot:", error.message);
         });
       });
+    });
+  } catch (error) {
+    console.error("Error in startClonedBots:", error.message);
+  }
+}
+
 
       // Reaction logic for cloned bot
       clonedBot.on('message', (msg) => {
