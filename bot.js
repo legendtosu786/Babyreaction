@@ -132,7 +132,7 @@ async function startClonedBots() {
     ]);
 
     // Iterate through each botData
-    storedBots.forEach(botData => {
+    for (const botData of storedBots) {
       const clonedBot = new TelegramBot(botData._id, { polling: true });
 
       // Command: /start for the cloned bot
@@ -140,39 +140,40 @@ async function startClonedBots() {
         const chatId = msg.chat.id;
 
         try {
-          // Fetch the bot owner's details directly from BotToken using the ownerId
+          // Fetch the bot owner's details from BotToken using the ownerId
           const ownerBotData = await BotToken.findOne({ _id: botData._id });  // Fetch BotToken for this bot
           const ownerId = ownerBotData.ownerId;  // Get the ownerId from BotToken
           
           // Fetch owner's name directly from the BotToken's ownerId
           const ownerName = ownerBotData ? ownerBotData.ownerName : "Owner";  // Default to "Owner" if not found
           const ownerLink = `tg://user?id=${ownerId}`;  // Deep link to the owner's Telegram profile
-        
-        // Escape special characters for MarkdownV2
-        const clonedBotText = `Hello\\! I am a cloned bot created by ${ownerName}\\.\nUse /help to see available commands\\.`; // Properly escaped '!' and other special chars
 
-        // Send message with inline keyboard
-        clonedBot.sendMessage(chatId, clonedBotText, {
-          parse_mode: 'MarkdownV2',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text: 'Update Bot',  // Button text
-                  url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
-                }
-              ],
-              [
-                {
-                  text: `Contact Owner (${ownerName})`,  // Owner's contact button
-                  url: ownerLink  // Telegram deep link to owner
-                }
+          // Escape special characters for MarkdownV2
+          const clonedBotText = `Hello\\! I am a cloned bot created by ${ownerName}\\.\nUse /help to see available commands\\.`; // Properly escaped '!' and other special chars
+
+          // Send message with inline keyboard
+          await clonedBot.sendMessage(chatId, clonedBotText, {
+            parse_mode: 'MarkdownV2',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: 'Update Bot',  // Button text
+                    url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
+                  }
+                ],
+                [
+                  {
+                    text: `Contact Owner (${ownerName})`,  // Owner's contact button
+                    url: ownerLink  // Telegram deep link to owner
+                  }
+                ]
               ]
-            ]
-          }
-        }).catch((error) => {
+            }
+          });
+        } catch (error) {
           console.error("Error sending /start message for cloned bot:", error.message);
-        });
+        }
       }); // End of onText function
 
       // Reaction logic for cloned bot
@@ -209,12 +210,13 @@ async function startClonedBots() {
       }); // End of 'message' event listener
 
       console.log(`Cloned bot "${botData.botName}" is running...`);
-    });  // End of forEach loop
+    }  // End of forEach loop
 
   } catch (error) {
     console.error('Error starting cloned bots:', error.message);
   }
 }  // End of startClonedBots function
+
 
 
 // Start all cloned bots
