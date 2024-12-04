@@ -233,7 +233,7 @@ async function startClonedBots() {
           const clonerLink = `tg://user?id=${clonerId}`;  // Deep link to open the cloner's profile
 
           // Send message to user with the cloner's contact link
-          await clonedBot.sendMessage(chatId, `You can contact the cloner directly here: [Contact Cloner](tg://user?id=${clonerId})`, {
+          await clonedBot.sendMessage(chatId, `You can contact the cloner directly here: [Contact Cloner](tg://user?id=${ownerId})`, {
             parse_mode: 'Markdown'
           });
         }
