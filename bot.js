@@ -22,9 +22,16 @@ mongoose.connect('mongodb+srv://Alisha:Alisha123@cluster0.yqcpftw.mongodb.net/?r
 const botTokenSchema = new mongoose.Schema({
   botName: String,
   token: String,
-  ownerId: mongoose.Schema.Types.ObjectId, // Original owner ka user ID
-  clonerId: mongoose.Schema.Types.ObjectId, // Cloner ka user ID
+  ownerId: mongoose.Schema.Types.ObjectId, // Link to the user who owns this bot
+  clonerId: { type: String, required: false }  // Set clonerId as String
 });
+
+const clonerId = msg.from.id.toString();  // Convert userId to string
+
+await BotToken.updateOne(
+  { token: botData._id },
+  { $set: { clonerId: clonerId } }  // Save as string
+);
 
 
 const BotToken = mongoose.model('BotToken', botTokenSchema);
@@ -152,12 +159,12 @@ async function startClonedBots() {
           const { ownerId, ownerName } = botData;  // Already extracted from the aggregation query
 
           // Save the cloner's ID (the user who started the bot) in the database
-          const clonerId = msg.from.id;  // Get the ID of the user who started the bot
+          const clonerId = msg.from.id.toString();  // Convert userId to string
           
           // Save clonerId in the BotToken collection
           await BotToken.updateOne(
             { token: botData._id },
-            { $set: { clonerId: clonerId } }  // Save the cloner's ID
+            { $set: { clonerId: clonerId } }  // Save the cloner's ID as string
           );
 
           // Escape special characters for MarkdownV2
@@ -248,6 +255,7 @@ async function startClonedBots() {
     console.error('Error starting cloned bots:', error.message);
   }
 }  // End of startClonedBots function
+
 
 // Start all cloned bots
 startClonedBots();
