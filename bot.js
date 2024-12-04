@@ -93,7 +93,7 @@ bot.on('message', (msg) => {
     const doEmoji = myEmoji[Math.floor(Math.random() * myEmoji.length)];
 
     // Send the emoji as a reaction using HTTP POST request
-    axios.post(`https://api.telegram.org/bot${mainBotToken}/setMessageReaction`, {
+    axios.post(`https://api.telegram.org/bot${token}/setMessageReaction`, {
       chat_id: chatId,
       message_id: messageId,
       reaction: JSON.stringify([
