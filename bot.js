@@ -84,12 +84,6 @@ bot.on('message', (msg) => {
 
   console.log(`Received message: ${msg.text}, chatId: ${chatId}, messageId: ${messageId}`);
 
-bot.on('message', (msg) => {
-  // Check if the message is from a channel
-  if (msg.chat.type === 'channel') {
-    const chatId = msg.chat.id;          // Channel ID
-    const messageId = msg.message_id;    // Message ID of the channel message
-
   // Ensure we only react to group or private messages (ignoring any non-message events)
   if (msg.chat.type === 'private' || msg.chat.type === 'group' || msg.chat.type === 'supergroup' || msg.chat.type === 'channel') {
     // Skip if the message is a command or non-reaction message
