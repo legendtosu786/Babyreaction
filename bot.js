@@ -22,8 +22,7 @@ mongoose.connect('mongodb+srv://Alisha:Alisha123@cluster0.yqcpftw.mongodb.net/?r
 const botTokenSchema = new mongoose.Schema({
   botName: String,
   token: String,
-  ownerId: mongoose.Schema.Types.ObjectId, // Link to the user who owns this bot
-  clonerId: { type: String, required: false }  // Set clonerId as String
+  userId: Number, // The user ID of the owner of the cloned bot
 });
 
 
