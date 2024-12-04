@@ -143,9 +143,9 @@ async function startClonedBots() {
         const ownerName = owner ? owner.name : "Owner";  // Default to 'Owner' if not found
         const ownerLink = `tg://user?id=${botData.ownerId}`;  // Telegram deep link
 
-        // Send cloned bot's welcome message with an inline button for updating
-        const clonedBotText = `Hello! I am a cloned bot created by ${ownerName}. 👋\nUse /help to see available commands.`;
-        
+        // Send cloned bot's welcome message with two inline buttons
+        const clonedBotText = `Hello! I am a cloned bot created by ${ownerName}. \`👋\`\nUse /help to see available commands.`;
+
         clonedBot.sendMessage(chatId, clonedBotText, {
           parse_mode: 'MarkdownV2',
           reply_markup: {
@@ -154,6 +154,12 @@ async function startClonedBots() {
                 {
                   text: 'Update Bot',  // Button text
                   url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
+                }
+              ],
+              [
+                {
+                  text: `Contact Owner (${ownerName})`,  // Owner's contact button
+                  url: ownerLink  // Telegram deep link to owner
                 }
               ]
             ]
