@@ -139,23 +139,29 @@ async function broadcastMessageToUsers(ownerId, messageText, startingMessage) {
     const cloneUsers = await CloneUser.find();
     let sentCount = 0;
 
-    // Loop through each cloned user and send the message using their respective cloned bot
-    for (const cloneUser of cloneUsers) {
-      // Fetch bot token for each cloned bot
-      const clonedBot = new TelegramBot(cloneUser.botToken, { polling: true });
-      const chatId = cloneUser.chatId;
+    // Fetch all BotTokens (for all cloned bots)
+    const botTokens = await BotToken.find();
 
-      try {
-        // Send message to the user's chatId using the cloned bot
-        await clonedBot.sendMessage(chatId, messageText);
-        sentCount++;
-        console.log(`Message sent to userId: ${cloneUser.userId} (chatId: ${chatId}) using bot: ${cloneUser.botToken}`);
-      } catch (error) {
-        console.error(`Failed to send message to userId: ${cloneUser.userId} using bot: ${cloneUser.botToken}:`, error.message);
+    // Loop through each BotToken (each cloned bot)
+    for (const botTokenDoc of botTokens) {
+      const clonedBot = new TelegramBot(botTokenDoc.token, { polling: true });
+
+      // Loop through all clone users
+      for (const cloneUser of cloneUsers) {
+        const chatId = cloneUser.chatId;
+
+        try {
+          // Send message to the user using the current cloned bot
+          await clonedBot.sendMessage(chatId, messageText);
+          sentCount++;
+          console.log(`Message sent to userId: ${cloneUser.userId} (chatId: ${chatId}) using bot: ${botTokenDoc.token}`);
+        } catch (error) {
+          console.error(`Failed to send message to userId: ${cloneUser.userId} using bot: ${botTokenDoc.token}:`, error.message);
+        }
       }
     }
 
-    // Optionally, edit the "Starting broadcast..." message to show the stats
+    
     await bot.editMessageText(`Broadcast complete! Message sent to ${sentCount} users.`, {
       chat_id: startingMessage.chat.id,
       message_id: startingMessage.message_id
@@ -167,6 +173,7 @@ async function broadcastMessageToUsers(ownerId, messageText, startingMessage) {
     console.error('Error broadcasting message:', error.message);
   }
 }
+
 
 
 
