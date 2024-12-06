@@ -139,11 +139,11 @@ bot.onText(/\/broadcast (.+)/, async (msg, match) => {
 
   // Check if the sender is the bot owner
   if (msg.from.id !== ownerId) {
-    return bot.sendMessage(chatId, 'You are not authorized to broadcast messages.');
+    return bot.sendMessage(chatId, '⤿ Bʜᴀɢ ʙᴇᴛɪᴄʜᴏᴅ.');
   }
 
   if (!messageText) {
-    return bot.sendMessage(chatId, 'Please provide a message after /broadcast.');
+    return bot.sendMessage(chatId, '⥃ Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ/ʀᴇᴘʟʏ ᴀ ᴍᴇssᴀɢᴇ ᴀғᴛᴇʀ /broadcast.');
   }
 
   // Send the "Starting broadcast..." message to owner
