@@ -153,18 +153,8 @@ async function broadcastMessageToUsers(ownerId, messageText, startingMessage) {
       }
     }
 
-    // Fetch the main bot token from the database (to send status message)
-    const mainBotTokenDoc = await BotToken.findOne({ userId: ownerId }); // Find the main bot based on ownerId
-    if (!mainBotTokenDoc) {
-      console.error("Main bot token not found for ownerId:", ownerId);
-      return;
-    }
-
-    // Create a new instance of TelegramBot with the main bot token
-    const mainBot = new TelegramBot(mainBotTokenDoc.token, { polling: true });
-
     // Edit the "Starting broadcast..." message to show the stats
-    await mainBot.editMessageText(`Broadcast complete! Message sent to ${sentCount} users.`, {
+    await bot.editMessageText(`Broadcast complete! Message sent to ${sentCount} users.`, {
       chat_id: startingMessage.chat.id,
       message_id: startingMessage.message_id
     });
