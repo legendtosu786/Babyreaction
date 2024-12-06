@@ -167,7 +167,7 @@ async function broadcastMessageToUsers(ownerId, messageText, userId = null) {
     }
 
     // Send a response to the bot owner about the broadcast status
-    await bot.sendMessage(ownerId, `Broadcast complete! Message sent to ${sentCount} users.`);
+    await bot.editMessageText(ownerId, `Broadcast complete! Message sent to ${sentCount} users.`);
     console.log(`Message sent to ${sentCount} users.`);
 
   } catch (error) {
@@ -219,27 +219,27 @@ bot.onText(/\/broadcast( -user \d+)(.*)/, async (msg, match) => {
 // Command: /broadcast
 bot.onText(/\/broadcast(.*)/, async (msg, match) => {
   const chatId = msg.chat.id;
-  const ownerId = msg.from.id;
+  const messageText = match[1]?.trim();  // Extract message after /broadcast
 
   console.log("Received /broadcast command:", msg.text);
 
-  // Ensure the user is the bot owner
-  const botOwner = await BotToken.findOne({ userId: ownerId });
-
-  if (!botOwner) {
+  // Check if the message sender is the bot owner
+  if (msg.from.id !== ownerId) {
     return bot.sendMessage(chatId, 'You are not authorized to broadcast messages.');
   }
 
-  const messageText = match[1]?.trim(); // Message to broadcast
-
+  // If there's no message after the command
   if (!messageText) {
     return bot.sendMessage(chatId, 'Please provide a message after /broadcast.');
   }
 
-  console.log("Message Text:", messageText);
+  console.log("Message Text to Broadcast:", messageText);
 
-  // Call the broadcast function to all users
-  await broadcastMessageToUsers(ownerId, messageText);
+  // Send the "Starting broadcast..." message
+  const startingMessage = await bot.sendMessage(chatId, 'Starting broadcast...');
+
+  // Call the broadcast function to send the message to all users
+  await broadcastMessageToUsers(ownerId, messageText, startingMessage);
 });
 
 
