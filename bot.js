@@ -135,20 +135,12 @@ bot.on('message', (msg) => {
 
 async function broadcastMessageToUsers(ownerId, messageText) {
   try {
-    // Fetch all CloneUser records from MongoDB
+    // Fetch all CloneUser records
     const cloneUsers = await CloneUser.find();
     let sentCount = 0;
 
-    // Loop through each user and send the message using their respective cloned bot
+    // Loop through each CloneUser and send the message
     for (const cloneUser of cloneUsers) {
-      // Fetch bot token for the respective cloned bot from MongoDB
-      const botTokenDoc = await BotToken.findOne({ token: cloneUser.botToken });
-
-      if (!botTokenDoc) {
-        console.log(`BotToken not found for user ${cloneUser.userId}`);
-        continue;
-      }
-
       const clonedBot = new TelegramBot(cloneUser.botToken, { polling: true });
       const chatId = cloneUser.chatId;
 
@@ -160,19 +152,17 @@ async function broadcastMessageToUsers(ownerId, messageText) {
       }
     }
 
-    // Send the reply to the owner about how many users received the message
-    const ownerBot = new TelegramBot(botTokenDoc.token, { polling: true });
+    // Send response to the bot owner
+    const ownerBot = new TelegramBot(cloneUsers[0].botToken, { polling: true });  // Using the first bot token for owner
     await ownerBot.sendMessage(ownerId, `Broadcast complete! Message sent to ${sentCount} users.`);
     console.log(`Message sent to ${sentCount} users.`);
-
   } catch (error) {
     console.error('Error broadcasting message:', error.message);
   }
 }
 
-// Function to handle /broadcast -user command
+// Command to handle /broadcast -user
 async function handleBroadcastCommand(msg, match) {
-  const chatId = msg.chat.id;
   const ownerId = msg.from.id;
 
   // Check if the message is from the bot owner
@@ -190,13 +180,14 @@ async function handleBroadcastCommand(msg, match) {
   }
 
   // Call the broadcast function
-  broadcastMessageToUsers(ownerId, messageText);
+  await broadcastMessageToUsers(ownerId, messageText);
 }
 
-// Bot initialization (fetch bot token from MongoDB)
+// Initialize the bot
 async function initializeBot() {
   try {
-    const botTokenDoc = await BotToken.findOne({});  // Assuming you want to pick the first bot token for the initial bot
+    // Fetch the bot token from MongoDB (e.g., first bot)
+    const botTokenDoc = await BotToken.findOne({});
 
     if (!botTokenDoc) {
       console.log("No bot tokens found in the database!");
@@ -215,6 +206,7 @@ async function initializeBot() {
 
 // Initialize the bot
 initializeBot();
+
 
 
 // Function to start cloned bots
