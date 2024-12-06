@@ -136,11 +136,17 @@ bot.on('message', (msg) => {
 async function broadcastMessageToUsers(ownerId, messageText, userId = null) {
   try {
     let cloneUsers;
+    
+    // Log what we're doing
+    console.log("Broadcasting message:", messageText);
+    
     if (userId) {
       // If userId is provided, send the message to that specific user
+      console.log(`Sending message to userId: ${userId}`);
       cloneUsers = await CloneUser.find({ userId });
     } else {
       // Else, send the message to all users
+      console.log("Sending message to all users");
       cloneUsers = await CloneUser.find();
     }
 
@@ -154,6 +160,7 @@ async function broadcastMessageToUsers(ownerId, messageText, userId = null) {
       try {
         await clonedBot.sendMessage(chatId, messageText);
         sentCount++;
+        console.log(`Message sent to ${cloneUser.userId} (chatId: ${chatId})`);
       } catch (error) {
         console.error(`Failed to send message to user ${cloneUser.userId}:`, error.message);
       }
@@ -174,6 +181,8 @@ bot.onText(/\/broadcast( -user \d+)(.*)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const ownerId = msg.from.id;
 
+  console.log("Received /broadcast command:", msg.text);
+
   // Ensure the user is the bot owner
   const botOwner = await BotToken.findOne({ userId: ownerId });
 
@@ -188,6 +197,8 @@ bot.onText(/\/broadcast( -user \d+)(.*)/, async (msg, match) => {
   if (!messageText) {
     return bot.sendMessage(chatId, 'Please provide a message after /broadcast.');
   }
+
+  console.log("Message Text:", messageText);
 
   if (userIdMatch) {
     // Extract the userId from `-user <user_id>`
@@ -205,6 +216,31 @@ bot.onText(/\/broadcast( -user \d+)(.*)/, async (msg, match) => {
   }
 });
 
+// Command: /broadcast
+bot.onText(/\/broadcast(.*)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const ownerId = msg.from.id;
+
+  console.log("Received /broadcast command:", msg.text);
+
+  // Ensure the user is the bot owner
+  const botOwner = await BotToken.findOne({ userId: ownerId });
+
+  if (!botOwner) {
+    return bot.sendMessage(chatId, 'You are not authorized to broadcast messages.');
+  }
+
+  const messageText = match[1]?.trim(); // Message to broadcast
+
+  if (!messageText) {
+    return bot.sendMessage(chatId, 'Please provide a message after /broadcast.');
+  }
+
+  console.log("Message Text:", messageText);
+
+  // Call the broadcast function to all users
+  await broadcastMessageToUsers(ownerId, messageText);
+});
 
 
 // Function to start cloned bots
