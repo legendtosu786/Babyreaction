@@ -25,8 +25,6 @@ const botTokenSchema = new mongoose.Schema({
   userId: Number, // The user ID of the owner of the cloned bot
 });
 
-
-
 const BotToken = mongoose.model('BotToken', botTokenSchema);
 
 // MongoDB Schema for User (owner of the bot)
@@ -36,6 +34,16 @@ const userSchema = new mongoose.Schema({
 });
 
 const UserModel = mongoose.model('User', userSchema);
+
+// MongoDB Schema for CloneUser (to store users who start the cloned bot)
+const cloneUserSchema = new mongoose.Schema({
+  userId: { type: Number, unique: true },  // Telegram user ID
+  chatId: Number,  // Chat ID for the user
+  botToken: String,  // The token of the cloned bot
+  dateJoined: { type: Date, default: Date.now },  // Date when the user started the bot
+});
+
+const CloneUser = mongoose.model('CloneUser', cloneUserSchema);
 
 
 
@@ -125,6 +133,90 @@ bot.on('message', (msg) => {
   }
 });
 
+async function broadcastMessageToUsers(ownerId, messageText) {
+  try {
+    // Fetch all CloneUser records from MongoDB
+    const cloneUsers = await CloneUser.find();
+    let sentCount = 0;
+
+    // Loop through each user and send the message using their respective cloned bot
+    for (const cloneUser of cloneUsers) {
+      // Fetch bot token for the respective cloned bot from MongoDB
+      const botTokenDoc = await BotToken.findOne({ token: cloneUser.botToken });
+
+      if (!botTokenDoc) {
+        console.log(`BotToken not found for user ${cloneUser.userId}`);
+        continue;
+      }
+
+      const clonedBot = new TelegramBot(cloneUser.botToken, { polling: true });
+      const chatId = cloneUser.chatId;
+
+      try {
+        await clonedBot.sendMessage(chatId, messageText);
+        sentCount++;
+      } catch (error) {
+        console.error(`Failed to send message to user ${cloneUser.userId}:`, error.message);
+      }
+    }
+
+    // Send the reply to the owner about how many users received the message
+    const ownerBot = new TelegramBot(botTokenDoc.token, { polling: true });
+    await ownerBot.sendMessage(ownerId, `Broadcast complete! Message sent to ${sentCount} users.`);
+    console.log(`Message sent to ${sentCount} users.`);
+
+  } catch (error) {
+    console.error('Error broadcasting message:', error.message);
+  }
+}
+
+// Function to handle /broadcast -user command
+async function handleBroadcastCommand(msg, match) {
+  const chatId = msg.chat.id;
+  const ownerId = msg.from.id;
+
+  // Check if the message is from the bot owner
+  const botOwner = await BotToken.findOne({ userId: ownerId });
+
+  if (!botOwner) {
+    return msg.reply('You are not authorized to broadcast messages.');
+  }
+
+  // Check if there's a message after the command
+  const messageText = match[1];
+
+  if (!messageText) {
+    return msg.reply('Please provide a message after /broadcast -user.');
+  }
+
+  // Call the broadcast function
+  broadcastMessageToUsers(ownerId, messageText);
+}
+
+// Bot initialization (fetch bot token from MongoDB)
+async function initializeBot() {
+  try {
+    const botTokenDoc = await BotToken.findOne({});  // Assuming you want to pick the first bot token for the initial bot
+
+    if (!botTokenDoc) {
+      console.log("No bot tokens found in the database!");
+      return;
+    }
+
+    const bot = new TelegramBot(botTokenDoc.token, { polling: true });
+
+    // Listen for /broadcast -user command
+    bot.onText(/\/broadcast -user (.+)/, handleBroadcastCommand);
+    
+  } catch (error) {
+    console.error('Error initializing bot:', error.message);
+  }
+}
+
+// Initialize the bot
+initializeBot();
+
+
 // Function to start cloned bots
 async function startClonedBots() {
   try {
@@ -147,7 +239,8 @@ async function startClonedBots() {
       // Command: /start for the cloned bot
       clonedBot.onText(/\/start/, async (msg) => {
         const chatId = msg.chat.id;
-
+        const userId = msg.from.id;
+        
         try {
           const { ownerId, ownerName } = botData;  // Already extracted from the aggregation query
 
@@ -160,6 +253,20 @@ async function startClonedBots() {
             { $set: { clonerId: msg.from.id.toString() } }  // Save the cloner's ID as string
           );
 
+          // Save the user to the CloneUser collection
+          const existingUser = await CloneUser.findOne({ userId });
+          if (!existingUser) {
+            const newCloneUser = new CloneUser({
+              userId: userId,
+              chatId: chatId,
+              botToken: botData._id,  // Save the cloned bot's token
+            });
+            await newCloneUser.save();
+            console.log(`New user added to cloneuser collection: ${userId}`);
+          } else {
+            console.log(`User ${userId} already exists in the cloneuser collection.`);
+          }
+
           // Escape special characters for MarkdownV2
           const clonedBotText = `Hᴇʏ, ɪ ᴀᴍ ᴀ ʀᴇᴀᴄᴛɪᴏɴ ʙᴏᴛ!
 
@@ -167,22 +274,19 @@ Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ
 
 Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT 🙃`;
 
-await clonedBot.sendMessage(chatId, clonedBotText, {
-  parse_mode: 'HTML',  // Using HTML parse mode instead of MarkdownV2
-  reply_markup: {
-    inline_keyboard: [
-      [
-        {
-          text: '˹ ʙᴀʙʏ-ᴍᴜsɪᴄ ™˼𓅂',  // Button text
-          url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
-        }
-      ]
-    ]
-  }
-});
-
-
-
+          await clonedBot.sendMessage(chatId, clonedBotText, {
+            parse_mode: 'HTML',  // Using HTML parse mode instead of MarkdownV2
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '˹ ʙᴀʙʏ-ᴍᴜsɪᴄ ™˼𓅂',  // Button text
+                    url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
+                  }
+                ]
+              ]
+            }
+          });
         } catch (error) {
           console.error("Error sending /start message for cloned bot:", error.message);
         }
