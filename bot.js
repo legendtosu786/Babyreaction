@@ -133,10 +133,17 @@ bot.on('message', (msg) => {
   }
 });
 
-async function broadcastMessageToUsers(ownerId, messageText) {
+async function broadcastMessageToUsers(ownerId, messageText, userId = null) {
   try {
-    // Fetch all CloneUser records
-    const cloneUsers = await CloneUser.find();
+    let cloneUsers;
+    if (userId) {
+      // If userId is provided, send the message to that specific user
+      cloneUsers = await CloneUser.find({ userId });
+    } else {
+      // Else, send the message to all users
+      cloneUsers = await CloneUser.find();
+    }
+
     let sentCount = 0;
 
     // Loop through each CloneUser and send the message
@@ -152,8 +159,9 @@ async function broadcastMessageToUsers(ownerId, messageText) {
       }
     }
 
-    // Send response to the bot owner
-    const ownerBot = new TelegramBot(cloneUsers[0].botToken, { polling: true });  // Using the first bot token for owner
+    // Send a response to the bot owner about the broadcast status
+    const botTokenDoc = await BotToken.findOne({ token: cloneUsers[0].botToken });
+    const ownerBot = new TelegramBot(botTokenDoc.token, { polling: true }); // Use any bot's token
     await ownerBot.sendMessage(ownerId, `Broadcast complete! Message sent to ${sentCount} users.`);
     console.log(`Message sent to ${sentCount} users.`);
   } catch (error) {
@@ -161,51 +169,41 @@ async function broadcastMessageToUsers(ownerId, messageText) {
   }
 }
 
-// Command to handle /broadcast -user
-async function handleBroadcastCommand(msg, match) {
+// Command: /broadcast -user
+bot.onText(/\/broadcast( -user \d+)(.*)/, async (msg, match) => {
+  const chatId = msg.chat.id;
   const ownerId = msg.from.id;
 
-  // Check if the message is from the bot owner
+  // Ensure the user is the bot owner
   const botOwner = await BotToken.findOne({ userId: ownerId });
 
   if (!botOwner) {
-    return msg.reply('You are not authorized to broadcast messages.');
+    return bot.sendMessage(chatId, 'You are not authorized to broadcast messages.');
   }
 
-  // Check if there's a message after the command
-  const messageText = match[1];
+  // Check if the command contains `-user` and a valid userId
+  const userIdMatch = match[1]?.trim(); // `-user <user_id>`
+  const messageText = match[2]?.trim(); // Message to broadcast
 
   if (!messageText) {
-    return msg.reply('Please provide a message after /broadcast -user.');
+    return bot.sendMessage(chatId, 'Please provide a message after /broadcast.');
   }
 
-  // Call the broadcast function
-  await broadcastMessageToUsers(ownerId, messageText);
-}
+  if (userIdMatch) {
+    // Extract the userId from `-user <user_id>`
+    const userId = parseInt(userIdMatch.split(' ')[1]);
 
-// Initialize the bot
-async function initializeBot() {
-  try {
-    // Fetch the bot token from MongoDB (e.g., first bot)
-    const botTokenDoc = await BotToken.findOne({});
-
-    if (!botTokenDoc) {
-      console.log("No bot tokens found in the database!");
-      return;
+    if (isNaN(userId)) {
+      return bot.sendMessage(chatId, 'Invalid user ID.');
     }
 
-    const bot = new TelegramBot(botTokenDoc.token, { polling: true });
-
-    // Listen for /broadcast -user command
-    bot.onText(/\/broadcast -user (.+)/, handleBroadcastCommand);
-    
-  } catch (error) {
-    console.error('Error initializing bot:', error.message);
+    // Call broadcast function for a specific user
+    await broadcastMessageToUsers(ownerId, messageText, userId);
+  } else {
+    // Call the broadcast function to all users
+    await broadcastMessageToUsers(ownerId, messageText);
   }
-}
-
-// Initialize the bot
-initializeBot();
+});
 
 
 
