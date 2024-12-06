@@ -147,7 +147,7 @@ bot.onText(/\/broadcast (.+)/, async (msg, match) => {
   }
 
   // Send the "Starting broadcast..." message to owner
-  const startingMessage = await bot.sendMessage(chatId, 'Starting broadcast...');
+  const startingMessage = await bot.sendMessage(chatId, '➥ G-ᴄᴀsᴛ ʀᴜɴɪɴɢ...');
 
   // Call the function to send the message to all users
   await broadcastMessageToUsers(messageText, startingMessage);
@@ -167,7 +167,7 @@ bot.on('message', async (msg) => {
     if (!replyMessage) return;
 
     // Send the "Starting broadcast..." message to owner
-    const startingMessage = await bot.sendMessage(chatId, 'Starting broadcast...');
+    const startingMessage = await bot.sendMessage(chatId, '➥ G-ᴄᴀsᴛ ʀᴜɴɪɴɢ...');
 
     // Call the function to send the reply message to all users
     await broadcastMessageToUsers(replyMessage, startingMessage);
@@ -204,7 +204,7 @@ async function broadcastMessageToUsers(messageText, startingMessage) {
     }
 
     // Edit the "Starting broadcast..." message to show the stats
-    await bot.editMessageText(`Broadcast complete! Message sent to ${sentCount} users.`, {
+    await bot.editMessageText(`⎋ Bʀᴏᴀᴅᴄᴀsᴛ ᴄᴏᴍᴘʟᴇᴛᴇ! Mᴇssᴀɢᴇ sᴇɴᴛ ᴛᴏ ${sentCount} ᴜsᴇʀs.`, {
       chat_id: startingMessage.chat.id,
       message_id: startingMessage.message_id
     });
