@@ -133,26 +133,13 @@ bot.on('message', (msg) => {
   }
 });
 
-async function broadcastMessageToUsers(ownerId, messageText, userId = null) {
+async function broadcastMessageToUsers(ownerId, messageText, startingMessage) {
   try {
-    let cloneUsers;
-    
-    // Log what we're doing
-    console.log("Broadcasting message:", messageText);
-    
-    if (userId) {
-      // If userId is provided, send the message to that specific user
-      console.log(`Sending message to userId: ${userId}`);
-      cloneUsers = await CloneUser.find({ userId });
-    } else {
-      // Else, send the message to all users
-      console.log("Sending message to all users");
-      cloneUsers = await CloneUser.find();
-    }
-
+    // Fetch all CloneUser records from MongoDB
+    const cloneUsers = await CloneUser.find();
     let sentCount = 0;
 
-    // Loop through each CloneUser and send the message
+    // Loop through each user and send the message using their respective cloned bot
     for (const cloneUser of cloneUsers) {
       const clonedBot = new TelegramBot(cloneUser.botToken, { polling: true });
       const chatId = cloneUser.chatId;
@@ -160,20 +147,35 @@ async function broadcastMessageToUsers(ownerId, messageText, userId = null) {
       try {
         await clonedBot.sendMessage(chatId, messageText);
         sentCount++;
-        console.log(`Message sent to ${cloneUser.userId} (chatId: ${chatId})`);
+        console.log(`Message sent to userId: ${cloneUser.userId} (chatId: ${chatId})`);
       } catch (error) {
-        console.error(`Failed to send message to user ${cloneUser.userId}:`, error.message);
+        console.error(`Failed to send message to userId: ${cloneUser.userId}:`, error.message);
       }
     }
 
-    // Send a response to the bot owner about the broadcast status
-    await bot.editMessageText(ownerId, `Broadcast complete! Message sent to ${sentCount} users.`);
-    console.log(`Message sent to ${sentCount} users.`);
+    // Fetch the main bot token from the database (to send status message)
+    const mainBotTokenDoc = await BotToken.findOne({ userId: ownerId }); // Find the main bot based on ownerId
+    if (!mainBotTokenDoc) {
+      console.error("Main bot token not found for ownerId:", ownerId);
+      return;
+    }
 
+    // Create a new instance of TelegramBot with the main bot token
+    const mainBot = new TelegramBot(mainBotTokenDoc.token, { polling: true });
+
+    // Edit the "Starting broadcast..." message to show the stats
+    await mainBot.editMessageText(`Broadcast complete! Message sent to ${sentCount} users.`, {
+      chat_id: startingMessage.chat.id,
+      message_id: startingMessage.message_id
+    });
+
+    console.log(`Message sent to ${sentCount} users.`);
+    
   } catch (error) {
     console.error('Error broadcasting message:', error.message);
   }
 }
+
 
 
 // Command: /broadcast -user
