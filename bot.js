@@ -167,14 +167,14 @@ async function broadcastMessageToUsers(ownerId, messageText, userId = null) {
     }
 
     // Send a response to the bot owner about the broadcast status
-    const botTokenDoc = await BotToken.findOne({ token: cloneUsers[0].botToken });
-    const ownerBot = new TelegramBot(botTokenDoc.token, { polling: true }); // Use any bot's token
-    await ownerBot.sendMessage(ownerId, `Broadcast complete! Message sent to ${sentCount} users.`);
+    await bot.sendMessage(ownerId, `Broadcast complete! Message sent to ${sentCount} users.`);
     console.log(`Message sent to ${sentCount} users.`);
+
   } catch (error) {
     console.error('Error broadcasting message:', error.message);
   }
 }
+
 
 // Command: /broadcast -user
 bot.onText(/\/broadcast( -user \d+)(.*)/, async (msg, match) => {
