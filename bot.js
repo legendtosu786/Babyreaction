@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 
 // Replace with your bot's token
-const token = '7532369778:AAH7r1yz8_G6vmSE8zjMUNslT6vobNcmj1o';
+const token = '7669417716:AAE6cbOlNIjHIiOtsQAAx9q_2LqYRBhXfKo';
 const bot = new TelegramBot(token, { polling: true });
 
 // Replace with your bot owner's user ID
