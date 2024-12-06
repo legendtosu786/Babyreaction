@@ -139,32 +139,35 @@ async function broadcastMessageToUsers(ownerId, messageText, startingMessage) {
     const cloneUsers = await CloneUser.find();
     let sentCount = 0;
 
-    // Loop through each user and send the message using their respective cloned bot
+    // Loop through each cloned user and send the message using their respective cloned bot
     for (const cloneUser of cloneUsers) {
+      // Fetch bot token for each cloned bot
       const clonedBot = new TelegramBot(cloneUser.botToken, { polling: true });
       const chatId = cloneUser.chatId;
 
       try {
+        // Send message to the user's chatId using the cloned bot
         await clonedBot.sendMessage(chatId, messageText);
         sentCount++;
-        console.log(`Message sent to userId: ${cloneUser.userId} (chatId: ${chatId})`);
+        console.log(`Message sent to userId: ${cloneUser.userId} (chatId: ${chatId}) using bot: ${cloneUser.botToken}`);
       } catch (error) {
-        console.error(`Failed to send message to userId: ${cloneUser.userId}:`, error.message);
+        console.error(`Failed to send message to userId: ${cloneUser.userId} using bot: ${cloneUser.botToken}:`, error.message);
       }
     }
 
-    // Edit the "Starting broadcast..." message to show the stats
+    // Optionally, edit the "Starting broadcast..." message to show the stats
     await bot.editMessageText(`Broadcast complete! Message sent to ${sentCount} users.`, {
       chat_id: startingMessage.chat.id,
       message_id: startingMessage.message_id
     });
 
-    console.log(`Message sent to ${sentCount} users.`);
-    
+    console.log(`Broadcast complete! Message sent to ${sentCount} users.`);
+
   } catch (error) {
     console.error('Error broadcasting message:', error.message);
   }
 }
+
 
 
 
