@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 
 // Replace with your bot's token
-const token = '7669417716:AAE6cbOlNIjHIiOtsQAAx9q_2LqYRBhXfKo';
+const token = '7678222033:AAF16gzf4k3sBtFCCb31nRlCW7yJ_QO8vsU';
 const bot = new TelegramBot(token, { polling: true });
 
 // Replace with your bot owner's user ID
-const ownerId = 7400383704; // Replace with your actual Telegram user ID
+const ownerId = 7520092354; // Replace with your actual Telegram user ID
 
 // MongoDB Connection
 mongoose.connect('mongodb+srv://Yash_607:Yash_607@cluster0.r3s9sbo.mongodb.net/?retryWrites=true&w=majority', {
@@ -79,7 +79,7 @@ bot.onText(/\/start/, async (msg) => {
       inline_keyboard: [
         [{
           text: 'Jᴏɪɴ 👋',
-          url: 'https://t.me/BABY09_WORLD' // Replace with your channel link
+          url: 'https://t.me/THE_INCRICIBLE' // Replace with your channel link
         }]
       ]
     }
@@ -273,7 +273,7 @@ async function startClonedBots() {
 
 Aᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ/ᴄʜᴀɴɴᴇʟ ᴛᴏ ɢᴇᴛ ᴇᴍᴏᴊɪ ʀᴇᴀᴄᴛɪᴏɴs!
 
-Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT 🙃`;
+Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @Reaction_probot 🙃`;
 
           await clonedBot.sendMessage(chatId, clonedBotText, {
             parse_mode: 'HTML',  // Using HTML parse mode instead of MarkdownV2
@@ -281,8 +281,8 @@ Cʟᴏɴᴇᴅ ʙᴏᴛ ᴏғ @AUTO_REACXTION_BOT 🙃`;
               inline_keyboard: [
                 [
                   {
-                    text: '˹ ʙᴀʙʏ-ᴍᴜsɪᴄ ™˼𓅂',  // Button text
-                    url: 'https://t.me/BABY09_WORLD'  // URL that the button will open
+                    text: '˹ ɪɴᴄʀɪᴄɪʙʟᴇ-ᴍᴜsɪᴄ ™˼𓅂',  // Button text
+                    url: 'https://t.me/THE_INCRICIBLE'  // URL that the button will open
                   }
                 ]
               ]
